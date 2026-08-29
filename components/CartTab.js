@@ -9,7 +9,7 @@ import ResetNudgeBanner from "@/components/ResetNudgeBanner";
  * "Add to Cart" from Home) but "Checkout" is a simulated confirmation only —
  * no real payment or order backend, documented in the README.
  */
-export default function CartTab({ onNavigateToWishlist }) {
+export default function CartTab({ onOpenReset }) {
   const { cart, removeFromCart, clearCart } = useWishlist();
   const [orderPlaced, setOrderPlaced] = useState(false);
 
@@ -42,7 +42,7 @@ export default function CartTab({ onNavigateToWishlist }) {
   if (cart.length === 0) {
     return (
       <div className="mx-auto max-w-5xl pb-6 pt-4">
-        <ResetNudgeBanner onNavigateToWishlist={onNavigateToWishlist} />
+        <ResetNudgeBanner onOpenReset={onOpenReset} className="mx-4 sm:mx-6" />
         <div className="mx-auto flex max-w-md flex-col items-center px-4 pt-16 text-center">
           <span className="text-4xl">🛒</span>
           <h1 className="mt-3 text-xl font-extrabold text-neutral-900">

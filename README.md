@@ -16,14 +16,15 @@ their wishlist down to what matters, without any monetary incentive.
 
 ## How it works
 
-There's a single route (`/`). Opening it drops you straight into a
-persistent app shell — top bar (wordmark, a visual-only search bar, a real
-cart icon with a live count) and a bottom tab bar (Home / Wishlist / Cart /
-Profile, Wishlist active by default) — with the wishlist grid as the
-immediate content, no marketing page first. Only the content area between
-those bars ever changes; the shell itself never unmounts or navigates away,
-so it reads as an app already sitting on its Wishlist screen rather than a
-website explaining a feature. All four tabs are real, working screens.
+There's a single route (`/`). Opening it drops you straight into **Home**
+as the landing screen — a persistent top nav (wordmark, category links,
+search bar, and a Profile / Wishlist / Bag icon strip on the right, styled
+after a typical Indian fashion e-commerce desktop layout) sits above the
+content, and never unmounts or navigates away. Wishlist has **no standing
+tab** — the nav's Wishlist icon is a hover trigger (click also toggles it,
+so it still works on touch) that shows a quick-preview dropdown; from
+there, "View Wishlist" or "Reset Now" opens the full wishlist experience as
+an overlay on top of whatever screen (Home/Profile/Cart) is behind it.
 
 **Shared state** (`lib/WishlistContext.js`) is a single client-side model:
 a static `catalog` (all 18 products, each with real LLM-derived
@@ -35,11 +36,16 @@ the wishlist from Home runs through the **exact same** deterministic
 verdict matrix and LLM reasoning as the original 18 — there's no
 special-casing for "new" vs. "seed" products.
 
-- **Home** (`components/HomeTab.js`) — browse the full catalog. Heart a
-  product to add/remove it from the wishlist; "Add to Cart" adds it
+- **Home** (`components/HomeTab.js`) — the landing screen: a promo banner
+  and a "shop by category" tile grid (original copy, no real coupon codes),
+  then the catalog grid. The top nav's category links (Men/Women/Kids/
+  Home/Beauty/GenZ/Studio — see `lib/categoryNav.js`) and the tile grid both
+  filter the same catalog grid by this demo's actual product categories.
+  Heart a product to add/remove it from the wishlist; "Add to Cart" adds it
   directly, skipping the wishlist entirely (a normal e-commerce shortcut).
-- **Wishlist** (`components/WishlistTab.js`) — a `grid → session → summary`
-  state machine, all in the same screen (no route change anywhere):
+- **Wishlist** (`components/WishlistTab.js`) — opened from the nav's hover
+  card, not a tab. A `grid → session → summary` state machine, all in the
+  same overlay (no route change anywhere):
   1. **Grid** — every wishlisted item, no verdicts yet (proves the clutter
      problem before the tool solves it). Each card's heart also lets you
      unwishlist directly, without a full reset session.
@@ -75,8 +81,9 @@ special-casing for "new" vs. "seed" products.
   bucket distribution by verdict.
 - **Reset nudge** (`components/ResetNudgeBanner.js`) — shown on Home, Cart,
   and Profile whenever the wishlist isn't empty, so you don't have to
-  remember to go check it yourself. One tap jumps to the Wishlist tab and
-  auto-starts the reset session immediately (no second click needed).
+  remember to go check it yourself. One tap opens the wishlist overlay and
+  auto-starts the reset session immediately (no second click needed) — the
+  same mechanism as the nav's "Reset Now" hover-card action.
 
 ## Setup
 

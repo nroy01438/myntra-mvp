@@ -3,26 +3,20 @@
 import { useWishlist } from "@/lib/WishlistContext";
 
 /**
- * Catchy nudge shown on tabs other than Wishlist, so the user doesn't have
- * to remember to go check their wishlist themselves. One tap jumps straight
- * to the Wishlist tab AND auto-starts the reset session (via
- * requestAutoReset in context) — no extra click once there.
+ * Catchy nudge shown on Home/Profile/Cart, so the user doesn't have to
+ * remember to check their wishlist themselves. One tap opens the wishlist
+ * overlay and immediately auto-starts the reset session — no extra click.
  */
-export default function ResetNudgeBanner({ onNavigateToWishlist }) {
-  const { wishlistItems, requestAutoReset } = useWishlist();
+export default function ResetNudgeBanner({ onOpenReset, className = "" }) {
+  const { wishlistItems } = useWishlist();
 
   if (wishlistItems.length === 0) return null;
-
-  function handleClick() {
-    requestAutoReset();
-    onNavigateToWishlist();
-  }
 
   return (
     <button
       type="button"
-      onClick={handleClick}
-      className="mx-3 mt-3 flex items-center gap-3 rounded-2xl border border-coral-200 bg-gradient-to-r from-coral-50 to-coral-100 px-4 py-3 text-left transition hover:from-coral-100 hover:to-coral-200 active:scale-[0.99] sm:mx-5"
+      onClick={onOpenReset}
+      className={`mt-3 flex items-center gap-3 rounded-2xl border border-coral-200 bg-gradient-to-r from-coral-50 to-coral-100 px-4 py-3 text-left transition hover:from-coral-100 hover:to-coral-200 active:scale-[0.99] ${className}`}
     >
       <span className="text-xl" aria-hidden>
         🧹

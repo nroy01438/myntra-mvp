@@ -8,11 +8,13 @@ import SwipeSession from "@/components/SwipeSession";
 import SummaryScreen from "@/components/SummaryScreen";
 
 /**
- * Everything the Wishlist tab can show, as in-place state — never a route
- * change. "grid" is the default (before) state; "Begin Reset" morphs the
- * same screen into the one-at-a-time session as an overlay bounded to the
- * content area (the app shell around it never moves); finishing the last
- * item morphs it again into the summary overlay.
+ * The wishlist experience, opened as a full overlay on top of whatever view
+ * (Home/Profile/Cart) is currently showing — Wishlist has no standing tab
+ * of its own, it's triggered from the nav's hover card (see
+ * WishlistHoverCard + app/page.js). "grid" is the default (before) state;
+ * "Begin Reset" morphs the same overlay into the one-at-a-time session;
+ * finishing the last item morphs it again into the summary. `onClose`
+ * dismisses the overlay back to whatever was behind it.
  *
  * The session queue is local state, snapshotted from the live wishlist when
  * a reset begins — wishlist membership itself lives in context (so Home can
@@ -21,7 +23,7 @@ import SummaryScreen from "@/components/SummaryScreen";
  * wishlist for a future session. Verdict matrix, LLM reasoning, and
  * crowd-stats logic are untouched — only how the screens are assembled.
  */
-export default function WishlistTab() {
+export default function WishlistTab({ onClose }) {
   const [phase, setPhase] = useState("grid"); // "grid" | "session" | "summary"
   const [sessionQueue, setSessionQueue] = useState([]);
   const [sessionOriginal, setSessionOriginal] = useState(0);
@@ -45,8 +47,8 @@ export default function WishlistTab() {
     setPhase("session");
   }
 
-  // A nudge banner elsewhere in the app can request an auto-start reset —
-  // honor it as soon as we're back on the grid with something to process.
+  // The nav's "Reset Now" hover-card action requests an auto-start reset —
+  // honor it as soon as we're mounted on the grid with something to process.
   useEffect(() => {
     if (autoResetRequested && phase === "grid" && wishlistItems.length > 0) {
       handleBeginReset();
@@ -80,73 +82,38 @@ export default function WishlistTab() {
     setPhase("grid");
   }
 
-  if (phase === "session") {
-    const currentIndex = sessionOriginal - sessionQueue.length;
-    const currentItem = sessionQueue[0];
-
-    return (
-      <div className="absolute inset-0 z-10 overflow-y-auto bg-neutral-50/98 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-sm flex-col items-center px-4 py-6">
-          <div className="mb-5 flex w-full items-center gap-3">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-200">
-              <div
-                className="h-full rounded-full bg-coral-500 transition-all"
-                style={{ width: `${(currentIndex / sessionOriginal) * 100}%` }}
-              />
-            </div>
-            <span className="whitespace-nowrap text-xs font-semibold text-neutral-500">
-              {currentIndex + 1} of {sessionOriginal}
-            </span>
-          </div>
-
-          {currentItem ? (
-            <SwipeSession
-              key={currentItem.id}
-              product={currentItem}
-              onComplete={handleItemComplete}
-            />
-          ) : (
-            <p className="pt-16 text-sm text-neutral-500">All done...</p>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  if (phase === "summary") {
-    const bought = sessionResults.filter((r) => r.action === "buy").length;
-    const kept = sessionResults.filter((r) => r.action === "keep").length;
-    const removed = sessionResults.filter((r) => r.action === "remove").length;
-
-    return (
-      <div className="absolute inset-0 z-10 overflow-y-auto bg-neutral-50/98 backdrop-blur-sm">
-        <SummaryScreen
-          originalCount={sessionOriginal}
-          bought={bought}
-          kept={kept}
-          removed={removed}
+  return (
+    <div className="absolute inset-0 z-30 overflow-y-auto bg-neutral-50">
+      {phase === "session" ? (
+        <SessionView
+          sessionQueue={sessionQueue}
+          sessionOriginal={sessionOriginal}
+          onComplete={handleItemComplete}
         />
-        <div className="mx-auto mt-8 flex max-w-md justify-center gap-3 px-4 pb-10">
-          <button
-            onClick={() => setPhase("grid")}
-            className="rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-50"
-          >
-            Done
-          </button>
-          <button
-            onClick={handleStartAnother}
-            className="rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600"
-          >
-            Start Another Session
-          </button>
-        </div>
-      </div>
-    );
-  }
+      ) : phase === "summary" ? (
+        <SummaryView
+          sessionOriginal={sessionOriginal}
+          sessionResults={sessionResults}
+          onDone={() => setPhase("grid")}
+          onStartAnother={handleStartAnother}
+        />
+      ) : (
+        <GridView
+          wishlistItems={wishlistItems}
+          wishlistIds={wishlistIds}
+          toggleWishlist={toggleWishlist}
+          onBeginReset={handleBeginReset}
+          onClose={onClose}
+        />
+      )}
+    </div>
+  );
+}
 
+function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, onClose }) {
   return (
     <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold text-neutral-900 sm:text-3xl">
             Your wishlist
@@ -155,16 +122,25 @@ export default function WishlistTab() {
             {wishlistItems.length} items saved · Last reviewed: 3 months ago
           </p>
         </div>
-        {wishlistItems.length > 0 && (
-          <button
-            onClick={handleBeginReset}
-            className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600 sm:mt-0"
-          >
-            Begin Reset
-            <span aria-hidden>→</span>
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close wishlist"
+          className="shrink-0 rounded-full border border-neutral-200 bg-white p-2 text-neutral-500 transition hover:bg-neutral-50"
+        >
+          ✕
+        </button>
       </div>
+
+      {wishlistItems.length > 0 && (
+        <button
+          onClick={onBeginReset}
+          className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600"
+        >
+          Begin Reset
+          <span aria-hidden>→</span>
+        </button>
+      )}
 
       {wishlistItems.length > 0 ? (
         <>
@@ -190,5 +166,63 @@ export default function WishlistTab() {
         </p>
       )}
     </div>
+  );
+}
+
+function SessionView({ sessionQueue, sessionOriginal, onComplete }) {
+  const currentIndex = sessionOriginal - sessionQueue.length;
+  const currentItem = sessionQueue[0];
+
+  return (
+    <div className="mx-auto flex max-w-sm flex-col items-center px-4 py-6">
+      <div className="mb-5 flex w-full items-center gap-3">
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-200">
+          <div
+            className="h-full rounded-full bg-coral-500 transition-all"
+            style={{ width: `${(currentIndex / sessionOriginal) * 100}%` }}
+          />
+        </div>
+        <span className="whitespace-nowrap text-xs font-semibold text-neutral-500">
+          {currentIndex + 1} of {sessionOriginal}
+        </span>
+      </div>
+
+      {currentItem ? (
+        <SwipeSession key={currentItem.id} product={currentItem} onComplete={onComplete} />
+      ) : (
+        <p className="pt-16 text-sm text-neutral-500">All done...</p>
+      )}
+    </div>
+  );
+}
+
+function SummaryView({ sessionOriginal, sessionResults, onDone, onStartAnother }) {
+  const bought = sessionResults.filter((r) => r.action === "buy").length;
+  const kept = sessionResults.filter((r) => r.action === "keep").length;
+  const removed = sessionResults.filter((r) => r.action === "remove").length;
+
+  return (
+    <>
+      <SummaryScreen
+        originalCount={sessionOriginal}
+        bought={bought}
+        kept={kept}
+        removed={removed}
+      />
+      <div className="mx-auto mt-8 flex max-w-md justify-center gap-3 px-4 pb-10">
+        <button
+          onClick={onDone}
+          className="rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-50"
+        >
+          Done
+        </button>
+        <button
+          onClick={onStartAnother}
+          className="rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600"
+        >
+          Start Another Session
+        </button>
+      </div>
+    </>
   );
 }
