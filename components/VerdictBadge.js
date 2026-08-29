@@ -38,6 +38,9 @@ export default function VerdictBadge({ verdict, headline, reasoning, isLoading, 
 
       {isLoading ? (
         <div className="mt-2 space-y-1.5">
+          <p className="text-xs font-medium text-neutral-400">
+            Checking what other shoppers actually did with this one…
+          </p>
           <div className="h-3 w-full animate-pulse rounded bg-neutral-100" />
           <div className="h-3 w-4/5 animate-pulse rounded bg-neutral-100" />
         </div>

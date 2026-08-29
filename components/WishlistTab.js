@@ -28,13 +28,16 @@ export default function WishlistTab({ onClose }) {
   const [sessionQueue, setSessionQueue] = useState([]);
   const [sessionOriginal, setSessionOriginal] = useState(0);
   const [sessionResults, setSessionResults] = useState([]);
+  const [lastCompleted, setLastCompleted] = useState(null); // { product, result, cameFromSummary }
 
   const {
     wishlistItems,
     wishlistIds,
     toggleWishlist,
+    addToWishlist,
     removeFromWishlist,
     addToCart,
+    removeFromCart,
     recordResult,
     autoResetRequested,
     clearAutoResetRequest,
@@ -44,6 +47,7 @@ export default function WishlistTab({ onClose }) {
     setSessionQueue(wishlistItems);
     setSessionOriginal(wishlistItems.length);
     setSessionResults([]);
+    setLastCompleted(null);
     setPhase("session");
   }
 
@@ -74,8 +78,28 @@ export default function WishlistTab({ onClose }) {
     const remaining = sessionQueue.slice(1);
     setSessionQueue(remaining);
     if (remaining.length === 0) {
+      setLastCompleted({ product, result, cameFromSummary: true });
       setPhase("summary");
+    } else {
+      setLastCompleted({ product, result, cameFromSummary: false });
     }
+  }
+
+  function handleUndo() {
+    if (!lastCompleted) return;
+    const { product, result, cameFromSummary } = lastCompleted;
+
+    if (result.action === "buy") {
+      removeFromCart(product.id);
+      addToWishlist(product.id);
+    } else if (result.action === "remove") {
+      addToWishlist(product.id);
+    }
+
+    setSessionQueue((prev) => [product, ...prev]);
+    setSessionResults((prev) => prev.slice(0, -1));
+    setLastCompleted(null);
+    if (cameFromSummary) setPhase("session");
   }
 
   return (
@@ -86,6 +110,8 @@ export default function WishlistTab({ onClose }) {
           sessionOriginal={sessionOriginal}
           onComplete={handleItemComplete}
           onClose={onClose}
+          canUndo={Boolean(lastCompleted)}
+          onUndo={handleUndo}
         />
       ) : phase === "summary" ? (
         <SummaryView
@@ -95,6 +121,8 @@ export default function WishlistTab({ onClose }) {
           onDone={onClose}
           onStartAnother={() => (wishlistItems.length > 0 ? handleBeginReset() : setPhase("grid"))}
           onClose={onClose}
+          canUndo={Boolean(lastCompleted)}
+          onUndo={handleUndo}
         />
       ) : (
         <GridView
@@ -120,6 +148,26 @@ function CloseButton({ onClose }) {
       ✕
     </button>
   );
+}
+
+function UndoLink({ onUndo }) {
+  return (
+    <button
+      type="button"
+      onClick={onUndo}
+      className="whitespace-nowrap text-xs font-semibold text-neutral-400 underline-offset-2 transition hover:text-coral-500 hover:underline"
+    >
+      ↩ Undo last
+    </button>
+  );
+}
+
+function milestoneMessage(currentIndex, total) {
+  if (total < 4) return null;
+  const pct = currentIndex / total;
+  if (currentIndex === total - 1) return "Last one — almost there! 🙌";
+  if (pct >= 0.5 && pct < 0.5 + 1 / total) return "Halfway there! 🎉";
+  return null;
 }
 
 function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, onClose }) {
@@ -174,13 +222,14 @@ function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, on
   );
 }
 
-function SessionView({ sessionQueue, sessionOriginal, onComplete, onClose }) {
+function SessionView({ sessionQueue, sessionOriginal, onComplete, onClose, canUndo, onUndo }) {
   const currentIndex = sessionOriginal - sessionQueue.length;
   const currentItem = sessionQueue[0];
+  const milestone = milestoneMessage(currentIndex, sessionOriginal);
 
   return (
     <div className="mx-auto flex max-w-sm flex-col items-center px-4 py-6 md:max-w-2xl">
-      <div className="mb-5 flex w-full items-center gap-3">
+      <div className="mb-2 flex w-full items-center gap-3">
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-200">
           <div
             className="h-full rounded-full bg-coral-500 transition-all"
@@ -191,6 +240,11 @@ function SessionView({ sessionQueue, sessionOriginal, onComplete, onClose }) {
           {currentIndex + 1} of {sessionOriginal}
         </span>
         <CloseButton onClose={onClose} />
+      </div>
+
+      <div className="mb-3 flex h-4 w-full items-center justify-between">
+        <span className="text-xs font-semibold text-coral-500">{milestone}</span>
+        {canUndo && <UndoLink onUndo={onUndo} />}
       </div>
 
       {currentItem ? (
@@ -209,6 +263,8 @@ function SummaryView({
   onDone,
   onStartAnother,
   onClose,
+  canUndo,
+  onUndo,
 }) {
   const bought = sessionResults.filter((r) => r.action === "buy").length;
   const kept = sessionResults.filter((r) => r.action === "keep").length;
@@ -225,21 +281,24 @@ function SummaryView({
         kept={kept}
         removed={removed}
       />
-      <div className="mx-auto mt-8 flex max-w-md justify-center gap-3 px-4 pb-10">
-        <button
-          onClick={onDone}
-          className="rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-50"
-        >
-          Done
-        </button>
-        {hasMoreToProcess && (
+      <div className="mx-auto mt-8 flex max-w-md flex-col items-center gap-3 px-4 pb-10">
+        <div className="flex justify-center gap-3">
           <button
-            onClick={onStartAnother}
-            className="rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600"
+            onClick={onDone}
+            className="rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-50"
           >
-            Keep Going
+            Done
           </button>
-        )}
+          {hasMoreToProcess && (
+            <button
+              onClick={onStartAnother}
+              className="rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600"
+            >
+              Keep Going
+            </button>
+          )}
+        </div>
+        {canUndo && <UndoLink onUndo={onUndo} />}
       </div>
     </div>
   );

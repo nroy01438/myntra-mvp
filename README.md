@@ -63,18 +63,25 @@ special-casing for "new" vs. "seed" products.
   2. **Reset session** — "Begin Reset" morphs the grid in place into a
      one-at-a-time session (an overlay bounded to the content area only —
      the shell doesn't move). Tap why you saved it (Love it / For an event /
-     Just browsing / Waiting for a deal). The deterministic rule matrix
-     (`/lib/verdictMatrix.js`, pure function, no LLM involved in the
-     decision) combines that reason with the item's crowd-behavior stats
-     into one verdict: **buy / keep / remove / disagreement**. An LLM call
-     (`/app/api/reasoning`) then writes a short plain-language sentence
-     explaining *that* verdict using the item's real numbers — disagreement
-     cases get a longer explanation referencing actual review snippets. You
-     act with Buy Now / Keep / Remove buttons, or swipe (left = remove,
-     right = buy — a two-direction horizontal swipe, with a "Remove"/"Buy"
-     tint that follows your drag) — both are equally valid. **Buy Now**
-     adds the item to the cart and removes it from the wishlist; **Remove**
-     just removes it; **Keep** leaves it in the wishlist for next time.
+     Just browsing / Waiting for a deal — or press 1-4 on a keyboard). The
+     deterministic rule matrix (`/lib/verdictMatrix.js`, pure function, no
+     LLM involved in the decision) combines that reason with the item's
+     crowd-behavior stats into one verdict: **buy / keep / remove /
+     disagreement**. An LLM call (`/app/api/reasoning`) then writes a short
+     explanation of *that* verdict using the item's real numbers — each
+     verdict gets its own voice (`buy` is written to build genuine desire,
+     not recite a stat; `keep`/`remove` are reassuring/guilt-free; the
+     prompt explicitly varies each one's opening so cards don't all read the
+     same), and disagreement cases get a longer explanation referencing
+     actual review snippets. You act with Buy Now / Keep / Remove buttons
+     (or R/K/B, or the arrow keys), or swipe (left = remove, right = buy —
+     a two-direction horizontal swipe, with a "Remove"/"Buy" tint that
+     follows your drag) — all equally valid. **Buy Now** adds the item to
+     the cart and removes it from the wishlist; **Remove** just removes it;
+     **Keep** leaves it in the wishlist for next time. **↩ Undo last** is
+     always available (session and summary alike) if you change your mind
+     about the item you just acted on, and the session calls out momentum
+     at the halfway point and on the last item.
   3. **Summary** — once the session's queue is empty, the same screen
      morphs again into the summary: tallies bought/kept/removed from *that*
      session and a genuine "your wishlist just got X% more useful" stat

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { getVerdict, REASONS, REASON_LABELS } from "@/lib/verdictMatrix";
 import VerdictBadge from "@/components/VerdictBadge";
@@ -114,6 +114,32 @@ export default function SwipeSession({ product, onComplete }) {
     }
   }
 
+  const revealed = Boolean(verdictResult);
+
+  // Keyboard shortcuts: 1-4 pick a reason before the verdict is revealed;
+  // B/K/R (or the arrow keys, mirroring the swipe directions) act on it
+  // afterwards. Makes repeat trips through a long wishlist much faster for
+  // anyone on a keyboard.
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!revealed) {
+        const index = Number(e.key) - 1;
+        if (index >= 0 && index < REASON_ORDER.length) {
+          requestVerdict(REASON_ORDER[index]);
+        }
+      } else {
+        const key = e.key.toLowerCase();
+        if (key === "b" || e.key === "ArrowRight") handleAction("buy");
+        else if (key === "k" || e.key === "ArrowUp") handleAction("keep");
+        else if (key === "r" || e.key === "ArrowLeft") handleAction("remove");
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealed]);
+
   const exitAnimation =
     exitDirection === "right"
       ? { x: 500, opacity: 0, rotate: 15 }
@@ -122,8 +148,6 @@ export default function SwipeSession({ product, onComplete }) {
       : exitDirection === "fade"
       ? { opacity: 0, scale: 0.95 }
       : {};
-
-  const revealed = Boolean(verdictResult);
 
   return (
     <motion.div
@@ -178,13 +202,16 @@ export default function SwipeSession({ product, onComplete }) {
                 Why did you save this?
               </p>
               <div className="grid grid-cols-2 gap-2">
-                {REASON_ORDER.map((r) => (
+                {REASON_ORDER.map((r, i) => (
                   <button
                     key={r}
                     onClick={() => requestVerdict(r)}
-                    className="rounded-xl border border-coral-200 bg-coral-50 px-3 py-2.5 text-sm font-semibold text-coral-700 transition hover:bg-coral-100 active:scale-95"
+                    className="relative rounded-xl border border-coral-200 bg-coral-50 px-3 py-2.5 text-sm font-semibold text-coral-700 transition hover:bg-coral-100 active:scale-95"
                   >
                     {REASON_LABELS[r]}
+                    <span className="absolute right-1.5 top-1.5 hidden h-4 w-4 items-center justify-center rounded bg-white/70 text-[9px] font-bold text-coral-400 md:flex">
+                      {i + 1}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -230,7 +257,12 @@ export default function SwipeSession({ product, onComplete }) {
                 >
                   ← Change reason
                 </button>
-                <p className="text-[11px] text-neutral-400">Or swipe: ← remove · buy →</p>
+                <p className="hidden text-[11px] text-neutral-400 md:block">
+                  Swipe, or R / K / B
+                </p>
+                <p className="text-[11px] text-neutral-400 md:hidden">
+                  Or swipe: ← remove · buy →
+                </p>
               </div>
             </>
           )}
