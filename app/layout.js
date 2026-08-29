@@ -16,9 +16,9 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Vastraloop — Wishlist Reset",
+  title: "myntra — Wishlist Reset",
   description:
-    "A product-management case study MVP: turning wishlist clutter into confident purchase decisions.",
+    "Unaffiliated concept prototype for a product-management case study: turning wishlist clutter into confident purchase decisions.",
 };
 
 export default function RootLayout({ children }) {
