@@ -14,7 +14,9 @@ import SummaryScreen from "@/components/SummaryScreen";
  * WishlistHoverCard + app/page.js). "grid" is the default (before) state;
  * "Begin Reset" morphs the same overlay into the one-at-a-time session;
  * finishing the last item morphs it again into the summary. `onClose`
- * dismisses the overlay back to whatever was behind it.
+ * dismisses the overlay entirely, back to whatever was behind it — always
+ * reachable (a close control appears on every phase, not just the grid),
+ * so a session never traps the user with no way out.
  *
  * The session queue is local state, snapshotted from the live wishlist when
  * a reset begins — wishlist membership itself lives in context (so Home can
@@ -78,10 +80,6 @@ export default function WishlistTab({ onClose }) {
     }
   }
 
-  function handleStartAnother() {
-    setPhase("grid");
-  }
-
   return (
     <div className="absolute inset-0 z-30 overflow-y-auto bg-neutral-50">
       {phase === "session" ? (
@@ -89,13 +87,16 @@ export default function WishlistTab({ onClose }) {
           sessionQueue={sessionQueue}
           sessionOriginal={sessionOriginal}
           onComplete={handleItemComplete}
+          onClose={onClose}
         />
       ) : phase === "summary" ? (
         <SummaryView
           sessionOriginal={sessionOriginal}
           sessionResults={sessionResults}
-          onDone={() => setPhase("grid")}
-          onStartAnother={handleStartAnother}
+          hasMoreToProcess={wishlistItems.length > 0}
+          onDone={onClose}
+          onStartAnother={() => (wishlistItems.length > 0 ? handleBeginReset() : setPhase("grid"))}
+          onClose={onClose}
         />
       ) : (
         <GridView
@@ -107,6 +108,19 @@ export default function WishlistTab({ onClose }) {
         />
       )}
     </div>
+  );
+}
+
+function CloseButton({ onClose }) {
+  return (
+    <button
+      type="button"
+      onClick={onClose}
+      aria-label="Close wishlist"
+      className="shrink-0 rounded-full border border-neutral-200 bg-white p-2 text-neutral-500 shadow-sm transition hover:bg-neutral-50"
+    >
+      ✕
+    </button>
   );
 }
 
@@ -122,14 +136,7 @@ function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, on
             {wishlistItems.length} items saved · Last reviewed: 3 months ago
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close wishlist"
-          className="shrink-0 rounded-full border border-neutral-200 bg-white p-2 text-neutral-500 transition hover:bg-neutral-50"
-        >
-          ✕
-        </button>
+        <CloseButton onClose={onClose} />
       </div>
 
       {wishlistItems.length > 0 && (
@@ -169,12 +176,12 @@ function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, on
   );
 }
 
-function SessionView({ sessionQueue, sessionOriginal, onComplete }) {
+function SessionView({ sessionQueue, sessionOriginal, onComplete, onClose }) {
   const currentIndex = sessionOriginal - sessionQueue.length;
   const currentItem = sessionQueue[0];
 
   return (
-    <div className="mx-auto flex max-w-sm flex-col items-center px-4 py-6">
+    <div className="mx-auto flex max-w-sm flex-col items-center px-4 py-6 md:max-w-2xl">
       <div className="mb-5 flex w-full items-center gap-3">
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-200">
           <div
@@ -185,6 +192,7 @@ function SessionView({ sessionQueue, sessionOriginal, onComplete }) {
         <span className="whitespace-nowrap text-xs font-semibold text-neutral-500">
           {currentIndex + 1} of {sessionOriginal}
         </span>
+        <CloseButton onClose={onClose} />
       </div>
 
       {currentItem ? (
@@ -196,13 +204,23 @@ function SessionView({ sessionQueue, sessionOriginal, onComplete }) {
   );
 }
 
-function SummaryView({ sessionOriginal, sessionResults, onDone, onStartAnother }) {
+function SummaryView({
+  sessionOriginal,
+  sessionResults,
+  hasMoreToProcess,
+  onDone,
+  onStartAnother,
+  onClose,
+}) {
   const bought = sessionResults.filter((r) => r.action === "buy").length;
   const kept = sessionResults.filter((r) => r.action === "keep").length;
   const removed = sessionResults.filter((r) => r.action === "remove").length;
 
   return (
-    <>
+    <div className="relative">
+      <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+        <CloseButton onClose={onClose} />
+      </div>
       <SummaryScreen
         originalCount={sessionOriginal}
         bought={bought}
@@ -216,13 +234,15 @@ function SummaryView({ sessionOriginal, sessionResults, onDone, onStartAnother }
         >
           Done
         </button>
-        <button
-          onClick={onStartAnother}
-          className="rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600"
-        >
-          Start Another Session
-        </button>
+        {hasMoreToProcess && (
+          <button
+            onClick={onStartAnother}
+            className="rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600"
+          >
+            Keep Going
+          </button>
+        )}
       </div>
-    </>
+    </div>
   );
 }

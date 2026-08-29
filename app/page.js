@@ -38,11 +38,7 @@ export default function AppRoot() {
       onOpenReset={handleOpenReset}
     >
       {view === "home" && (
-        <HomeTab
-          activeCategory={activeCategory}
-          onCategoryClick={handleCategoryClick}
-          onOpenReset={handleOpenReset}
-        />
+        <HomeTab activeCategory={activeCategory} onCategoryClick={handleCategoryClick} />
       )}
       {view === "profile" && <ProfileTab onOpenReset={handleOpenReset} />}
       {view === "cart" && <CartTab onOpenReset={handleOpenReset} />}

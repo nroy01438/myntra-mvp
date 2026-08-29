@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { getVerdict, REASONS, REASON_LABELS } from "@/lib/verdictMatrix";
 import VerdictBadge from "@/components/VerdictBadge";
+import ProductThumb from "@/components/ProductThumb";
 
 const REASON_ORDER = [
   REASONS.LOVE_IT,
@@ -23,12 +24,18 @@ const FALLBACK_REASONING = {
 };
 
 /**
- * One item, full-screen card. Two internal states:
+ * One item. Two internal states:
  * 1. "choosing" — reason chips visible, no verdict yet.
  * 2. "revealed" — verdict shown, Buy/Keep/Remove buttons AND a left/right
  *    swipe gesture are both valid ways to act (left = remove, right = buy).
  *    "Keep" is deliberately button-only — a two-direction horizontal swipe
- *    reads more naturally than a third, vertical one.
+ *    reads more naturally than a third, vertical one. "Change reason" lets
+ *    you back out of a verdict without losing your place in the session.
+ *
+ * Lays out as a stacked card on narrow screens and a side-by-side card
+ * (image left, decision right) on md+ — better use of the space an
+ * overlay gets on desktop, and the drag gesture stays confined to the
+ * card either way so it never fights page scroll.
  */
 export default function SwipeSession({ product, onComplete }) {
   const [reason, setReason] = useState(null);
@@ -37,13 +44,14 @@ export default function SwipeSession({ product, onComplete }) {
   const [isLoadingReasoning, setIsLoadingReasoning] = useState(false);
   const [exitDirection, setExitDirection] = useState(null);
   const dragX = useMotionValue(0);
-  const rotate = useTransform(dragX, [-200, 200], [-12, 12]);
+  const rotate = useTransform(dragX, [-200, 200], [-8, 8]);
   const removeOpacity = useTransform(dragX, [-120, -20, 0], [1, 0, 0]);
   const buyOpacity = useTransform(dragX, [0, 20, 120], [0, 0, 1]);
 
-  async function handleReasonTap(selectedReason) {
-    if (reason) return; // already chosen for this card
+  async function requestVerdict(selectedReason) {
     setReason(selectedReason);
+    setVerdictResult(null);
+    setReasoning("");
 
     const stockLevel = product.stockLevel;
     const verdict = getVerdict(selectedReason, { ...product.crowdStats, stockLevel });
@@ -71,6 +79,12 @@ export default function SwipeSession({ product, onComplete }) {
     } finally {
       setIsLoadingReasoning(false);
     }
+  }
+
+  function handleChangeReason() {
+    setReason(null);
+    setVerdictResult(null);
+    setReasoning("");
   }
 
   function finish(action, interaction) {
@@ -113,7 +127,7 @@ export default function SwipeSession({ product, onComplete }) {
 
   return (
     <motion.div
-      className="relative mx-auto w-full max-w-sm touch-none select-none"
+      className="relative mx-auto w-full max-w-sm touch-none select-none md:max-w-2xl"
       drag={revealed ? "x" : false}
       style={{ x: dragX, rotate }}
       dragConstraints={{ left: 0, right: 0 }}
@@ -138,22 +152,20 @@ export default function SwipeSession({ product, onComplete }) {
           </motion.span>
         </>
       )}
-      <div className="overflow-hidden rounded-3xl border border-neutral-100 bg-white shadow-xl">
-        <div className="aspect-[4/5] w-full bg-neutral-100">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="h-full w-full object-cover"
-            draggable={false}
-          />
-        </div>
-        <div className="space-y-3 p-4">
+      <div className="overflow-hidden rounded-3xl border border-neutral-100 bg-white shadow-xl md:flex">
+        <ProductThumb
+          category={product.category}
+          size="lg"
+          className="aspect-[4/5] w-full md:aspect-auto md:w-64 md:shrink-0"
+        />
+        <div className="space-y-3 p-4 md:flex-1 md:p-6">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
               {product.brand}
             </p>
-            <h2 className="text-lg font-extrabold text-neutral-900">{product.name}</h2>
+            <h2 className="text-lg font-extrabold text-neutral-900 md:text-xl">
+              {product.name}
+            </h2>
             <p className="mt-0.5 text-sm text-neutral-500">
               ₹{product.price.toLocaleString("en-IN")} ·{" "}
               {product.sizes?.map((s) => s.size).join(", ")}
@@ -169,7 +181,7 @@ export default function SwipeSession({ product, onComplete }) {
                 {REASON_ORDER.map((r) => (
                   <button
                     key={r}
-                    onClick={() => handleReasonTap(r)}
+                    onClick={() => requestVerdict(r)}
                     className="rounded-xl border border-coral-200 bg-coral-50 px-3 py-2.5 text-sm font-semibold text-coral-700 transition hover:bg-coral-100 active:scale-95"
                   >
                     {REASON_LABELS[r]}
@@ -211,9 +223,15 @@ export default function SwipeSession({ product, onComplete }) {
                   Buy Now
                 </button>
               </div>
-              <p className="text-center text-[11px] text-neutral-400">
-                Or swipe: ← remove · buy →
-              </p>
+              <div className="flex items-center justify-between pt-1">
+                <button
+                  onClick={handleChangeReason}
+                  className="text-xs font-semibold text-neutral-400 underline-offset-2 hover:text-coral-500 hover:underline"
+                >
+                  ← Change reason
+                </button>
+                <p className="text-[11px] text-neutral-400">Or swipe: ← remove · buy →</p>
+              </div>
             </>
           )}
         </div>

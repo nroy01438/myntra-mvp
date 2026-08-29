@@ -1,6 +1,7 @@
 "use client";
 
 import { HeartIcon, CartIcon } from "@/components/icons";
+import ProductThumb from "@/components/ProductThumb";
 
 /**
  * Product card used on both the Home (browse) and Wishlist (grid) screens.
@@ -11,13 +12,7 @@ export default function Card({ product, inWishlist, onToggleWishlist, onAddToCar
   return (
     <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm">
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-100">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          className="h-full w-full object-cover"
-          loading="lazy"
-        />
+        <ProductThumb category={product.category} size="lg" className="h-full w-full" />
         {onToggleWishlist && (
           <button
             type="button"

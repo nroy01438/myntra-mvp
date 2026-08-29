@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useWishlist } from "@/lib/WishlistContext";
 import ResetNudgeBanner from "@/components/ResetNudgeBanner";
+import ProductThumb from "@/components/ProductThumb";
 
 /**
  * Cart screen. Real state (items added via "Buy Now" in a reset session, or
@@ -70,14 +71,11 @@ export default function CartTab({ onOpenReset }) {
             key={item.id}
             className="flex items-center gap-3 rounded-2xl border border-neutral-100 bg-white p-3 shadow-sm"
           >
-            <div className="h-20 w-16 shrink-0 overflow-hidden rounded-lg bg-neutral-100">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={item.imageUrl}
-                alt={item.name}
-                className="h-full w-full object-cover"
-              />
-            </div>
+            <ProductThumb
+              category={item.category}
+              size="sm"
+              className="h-20 w-16 shrink-0 overflow-hidden rounded-lg"
+            />
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-semibold uppercase tracking-wide text-neutral-400">
                 {item.brand}

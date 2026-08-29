@@ -9,8 +9,10 @@ import { NAV_CATEGORIES } from "@/lib/categoryNav";
  * structure: wordmark, a row of category links, a search bar, and a
  * right-hand icon strip (Profile / Wishlist / Bag) — rather than a mobile
  * app's bottom tab bar. Category links are real (they filter Home's
- * product grid via `lib/categoryNav.js`); Wishlist is a hover trigger
- * (see WishlistHoverCard), not a standing tab.
+ * product grid via `lib/categoryNav.js`) and stay reachable on every
+ * screen size as a horizontally-scrollable row, rather than disappearing
+ * below a breakpoint. Wishlist is a hover trigger (see WishlistHoverCard),
+ * not a standing tab.
  */
 export default function TopNav({
   activeCategory,
@@ -23,32 +25,17 @@ export default function TopNav({
 }) {
   return (
     <div className="shrink-0 border-b border-neutral-200 bg-white">
-      <div className="flex items-center gap-6 px-4 py-3 sm:px-6">
+      <div className="flex items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
         <span className="shrink-0 text-2xl font-black italic tracking-tight text-coral-500">
           Myntra
         </span>
 
-        <nav className="hidden items-center gap-5 text-xs font-bold uppercase tracking-wide text-neutral-700 lg:flex">
-          {NAV_CATEGORIES.map((cat) => (
-            <button
-              key={cat.label}
-              type="button"
-              onClick={() => onCategoryClick(cat)}
-              className={`whitespace-nowrap transition hover:text-coral-500 ${
-                activeCategory?.label === cat.label ? "text-coral-500" : ""
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </nav>
-
-        <div className="flex flex-1 items-center gap-2 rounded-lg bg-neutral-100 px-3 py-2 text-neutral-400">
+        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg bg-neutral-100 px-3 py-2 text-neutral-400">
           <SearchIcon className="h-4 w-4 shrink-0" />
           <span className="truncate text-sm">Search for products, brands and more</span>
         </div>
 
-        <div className="flex shrink-0 items-center gap-4">
+        <div className="flex shrink-0 items-center gap-3 sm:gap-4">
           <button
             type="button"
             data-testid="nav-profile"
@@ -79,6 +66,21 @@ export default function TopNav({
           </button>
         </div>
       </div>
+
+      <nav className="flex items-center gap-5 overflow-x-auto px-4 pb-2.5 text-xs font-bold uppercase tracking-wide text-neutral-700 sm:px-6 [&::-webkit-scrollbar]:hidden">
+        {NAV_CATEGORIES.map((cat) => (
+          <button
+            key={cat.label}
+            type="button"
+            onClick={() => onCategoryClick(cat)}
+            className={`shrink-0 whitespace-nowrap transition hover:text-coral-500 ${
+              activeCategory?.label === cat.label ? "text-coral-500" : ""
+            }`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </nav>
     </div>
   );
 }

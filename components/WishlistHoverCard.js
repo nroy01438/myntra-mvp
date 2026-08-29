@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useWishlist } from "@/lib/WishlistContext";
 import { HeartIcon } from "@/components/icons";
+import ProductThumb from "@/components/ProductThumb";
 
 /**
  * The Wishlist nav icon is a hover trigger (click also toggles it, so it
@@ -39,7 +40,7 @@ export default function WishlistHoverCard({ onOpenWishlist, onOpenReset }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-30 w-72 rounded-2xl border border-neutral-100 bg-white p-3 shadow-xl">
+        <div className="absolute right-0 top-full z-30 w-72 max-w-[90vw] rounded-2xl border border-neutral-100 bg-white p-3 shadow-xl">
           {wishlistItems.length === 0 ? (
             <p className="px-1 py-2 text-sm text-neutral-500">
               Your wishlist is empty. Heart something on Home to save it here.
@@ -49,14 +50,11 @@ export default function WishlistHoverCard({ onOpenWishlist, onOpenReset }) {
               <div className="space-y-2">
                 {preview.map((item) => (
                   <div key={item.id} className="flex items-center gap-2">
-                    <div className="h-10 w-8 shrink-0 overflow-hidden rounded bg-neutral-100">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.imageUrl}
-                        alt={item.name}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
+                    <ProductThumb
+                      category={item.category}
+                      size="sm"
+                      className="h-10 w-8 shrink-0 overflow-hidden rounded"
+                    />
                     <span className="truncate text-xs font-medium text-neutral-700">
                       {item.name}
                     </span>

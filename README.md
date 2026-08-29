@@ -171,8 +171,12 @@ into case-study metrics without changing the event shape:
 - No database, no auth — fully stateless. Wishlist membership, cart
   contents, and session results all live only in React context in the
   browser tab and are lost on refresh.
-- Product images are placeholders (picsum.photos), not real product
-  photography.
+- Product images are category-tinted gradient blocks with a clothing-type
+  emoji (`components/ProductThumb.js`), not real product photography — per
+  the IP boundary spec, and it also means product visuals have zero
+  external network dependency.
+- The Assistant Google Font stands in for Myntra's actual (licensed)
+  webfont — visually close, not the real typeface.
 - Analytics events are console-logged / in-memory only, not persisted.
 - Checkout on the Cart tab is a simulated confirmation only — no real
   payment or order backend.

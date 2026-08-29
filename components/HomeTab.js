@@ -2,26 +2,27 @@
 
 import { useWishlist } from "@/lib/WishlistContext";
 import Card from "@/components/Card";
-import ResetNudgeBanner from "@/components/ResetNudgeBanner";
+import ProductThumb from "@/components/ProductThumb";
+import HeroBanner from "@/components/HeroBanner";
 
 const CATEGORY_TILES = [
-  { key: "dresses", label: "Dresses", seed: "tile-dresses", off: "40-70% OFF" },
-  { key: "ethnic_wear", label: "Ethnic Wear", seed: "tile-ethnic", off: "UP TO 60% OFF" },
-  { key: "shirts", label: "Shirts", seed: "tile-shirts", off: "30-70% OFF" },
-  { key: "jeans", label: "Jeans", seed: "tile-jeans", off: "UP TO 50% OFF" },
-  { key: "footwear", label: "Footwear", seed: "tile-footwear", off: "UP TO 60% OFF" },
+  { key: "dresses", label: "Dresses", off: "40-70% OFF" },
+  { key: "ethnic_wear", label: "Ethnic Wear", off: "UP TO 60% OFF" },
+  { key: "shirts", label: "Shirts", off: "30-70% OFF" },
+  { key: "jeans", label: "Jeans", off: "UP TO 50% OFF" },
+  { key: "footwear", label: "Footwear", off: "UP TO 60% OFF" },
 ];
 
 /**
- * The landing screen. A promo banner and category tile grid, styled after a
- * typical Indian fashion e-commerce homepage (original copy — no real
- * brand promo codes), followed by the catalog grid. Heart-toggling a
- * product here adds/removes it from the wishlist — since every catalog
- * product already carries real LLM-derived crowdStats, anything added here
- * runs through the exact same deterministic verdict matrix and LLM
- * reasoning in a reset session as the original 18 did.
+ * The landing screen: a hero banner and category tile grid, styled after a
+ * typical Indian fashion e-commerce homepage (original art/copy — no real
+ * brand promo codes or photography), followed by the catalog grid.
+ * Heart-toggling a product here adds/removes it from the wishlist — since
+ * every catalog product already carries real LLM-derived crowdStats,
+ * anything added here runs through the exact same deterministic verdict
+ * matrix and LLM reasoning in a reset session as the original 18 did.
  */
-export default function HomeTab({ activeCategory, onCategoryClick, onOpenReset }) {
+export default function HomeTab({ activeCategory, onCategoryClick }) {
   const { catalog, wishlistIds, toggleWishlist, addToCart } = useWishlist();
 
   const filtered =
@@ -33,16 +34,7 @@ export default function HomeTab({ activeCategory, onCategoryClick, onOpenReset }
 
   return (
     <div className="mx-auto max-w-6xl pb-10 pt-4">
-      <ResetNudgeBanner onOpenReset={onOpenReset} className="mx-4 sm:mx-6" />
-
-      <div className="mx-4 mt-4 overflow-hidden rounded-2xl bg-gradient-to-r from-coral-100 via-coral-50 to-coral-100 px-6 py-8 sm:mx-6 sm:px-10">
-        <p className="text-2xl font-black text-coral-600 sm:text-3xl">
-          New Season Drop — up to 40% off
-        </p>
-        <p className="mt-1 text-sm font-medium text-coral-500">
-          Case study demo only — not a real offer or coupon code.
-        </p>
-      </div>
+      <HeroBanner />
 
       <div className="mt-6 px-4 sm:px-6">
         <h2 className="text-lg font-bold text-neutral-900">Shop by category</h2>
@@ -55,15 +47,7 @@ export default function HomeTab({ activeCategory, onCategoryClick, onOpenReset }
               }
               className="overflow-hidden rounded-xl border border-neutral-100 bg-white text-left shadow-sm transition hover:shadow-md"
             >
-              <div className="aspect-square w-full bg-neutral-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://picsum.photos/seed/${tile.seed}/300/300`}
-                  alt={tile.label}
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                />
-              </div>
+              <ProductThumb category={tile.key} size="lg" className="aspect-square w-full" />
               <div className="p-2.5">
                 <p className="text-sm font-bold text-neutral-800">{tile.label}</p>
                 <p className="text-xs font-semibold text-coral-500">{tile.off}</p>

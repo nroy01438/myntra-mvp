@@ -1,16 +1,14 @@
-import localFont from "next/font/local";
+import { Assistant } from "next/font/google";
 import "./globals.css";
 import { WishlistProvider } from "@/lib/WishlistContext";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+// Assistant is a clean, modern grotesque sans close to the family Myntra's
+// real site uses — this project can't ship their actual licensed webfont,
+// so this is the closest freely-licensed stand-in.
+const assistant = Assistant({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-assistant",
 });
 
 export const metadata = {
@@ -22,9 +20,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} overscroll-none antialiased`}
-      >
+      <body className={`${assistant.variable} font-sans overscroll-none antialiased`}>
         <WishlistProvider>{children}</WishlistProvider>
       </body>
     </html>
