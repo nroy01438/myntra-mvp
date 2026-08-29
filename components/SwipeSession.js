@@ -155,9 +155,8 @@ export default function SwipeSession({ product, onComplete }) {
       <div className="overflow-hidden rounded-3xl border border-neutral-100 bg-white shadow-xl md:flex">
         <ProductThumb
           category={product.category}
-          seed={product.id}
           size="lg"
-          className="aspect-[4/5] w-full md:aspect-auto md:w-64 md:shrink-0"
+          className="aspect-square w-full md:aspect-auto md:w-56 md:shrink-0"
         />
         <div className="space-y-3 p-4 md:flex-1 md:p-6">
           <div>

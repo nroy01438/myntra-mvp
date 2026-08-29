@@ -71,9 +71,8 @@ export default function CartTab() {
           >
             <ProductThumb
               category={item.category}
-              seed={item.id}
               size="sm"
-              className="h-20 w-16 shrink-0 overflow-hidden rounded-lg"
+              className="h-16 w-14 shrink-0 overflow-hidden rounded-lg"
             />
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-semibold uppercase tracking-wide text-neutral-400">

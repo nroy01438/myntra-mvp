@@ -49,10 +49,12 @@ special-casing for "new" vs. "seed" products.
   returns to the landing screen.
 - **Wishlist** (`components/WishlistTab.js`) — its own screen, reached by
   clicking the nav's Wishlist icon directly (just like Profile/Bag — no
-  drawer in the way). Hovering the icon (desktop) additionally shows a
-  small floating "🧹 Reset Now" pill above it — a shortcut straight into the
-  reset session, not a preview drawer. The screen itself is a
-  `grid → session → summary` state machine, all in place (no further route
+  drawer in the way). Whenever there's something to reset, a small
+  "✨ Reset Now" pill floats directly beneath the icon itself (not a
+  generic button floating over the page content) — a shortcut straight
+  into the reset session, hidden once you're already on the Wishlist
+  screen. The screen itself is a `grid → session → summary` state machine,
+  all in place (no further route
   change):
   1. **Grid** — every wishlisted item, no verdicts yet (proves the clutter
      problem before the tool solves it), with the "Begin Reset" button
@@ -88,10 +90,6 @@ special-casing for "new" vs. "seed" products.
   lifetime `results` log (the same data `lib/analytics.js` logs per item)
   — items processed, % of the time you agreed with the verdict, and the
   bucket distribution by verdict.
-- **Floating reset button** (`components/ResetFAB.js`) — always visible
-  (not hover-gated) on every screen except the Wishlist screen itself,
-  whenever the wishlist isn't empty. One tap jumps straight into the reset
-  session — no second click needed.
 
 ## Setup
 
@@ -179,11 +177,11 @@ into case-study metrics without changing the event shape:
 - No database, no auth — fully stateless. Wishlist membership, cart
   contents, and session results all live only in React context in the
   browser tab and are lost on refresh.
-- Product images (`components/ProductThumb.js`) are category-relevant stock
-  photos from LoremFlickr (keyword-tagged, e.g. "dress", "saree", "jeans"
-  — not real Myntra photography, per the IP boundary spec), with a
-  graceful fallback to a category-tinted emoji block if a photo fails to
-  load. Both are placeholder imagery, never real product photography.
+- Product images (`components/ProductThumb.js`) are a category-tinted
+  gradient block with a clothing-type emoji, sized modestly rather than
+  filling the frame — not real product photography, per the IP boundary
+  spec. (An earlier iteration tried a keyword-tagged stock-photo API;
+  the results weren't reliably relevant, so this reverted to emoji.)
 - The Assistant Google Font stands in for Myntra's actual (licensed)
   webfont — visually close, not the real typeface.
 - Analytics events are console-logged / in-memory only, not persisted.

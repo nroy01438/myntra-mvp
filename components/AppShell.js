@@ -3,14 +3,15 @@
 import { useWishlist } from "@/lib/WishlistContext";
 import DisclaimerBadge from "@/components/DisclaimerBadge";
 import TopNav from "@/components/TopNav";
-import ResetFAB from "@/components/ResetFAB";
 
 /**
  * The persistent app shell: disclaimer banner and top nav never unmount or
  * navigate away — only the content area beneath changes as app/page.js
  * switches views. Every nav item is a real navigation (see TopNav). The
- * floating reset button is always visible (not hover-gated) except on the
- * Wishlist screen itself, where "Begin Reset" is already on-screen.
+ * reset trigger floats directly beneath the nav's Wishlist icon (see
+ * WishlistHoverCard) — not a generic button floating over whatever screen
+ * is showing — and is hidden on the Wishlist screen itself, where
+ * "Begin Reset" is already on-screen.
  */
 export default function AppShell({
   activeCategory,
@@ -36,10 +37,11 @@ export default function AppShell({
         onProfileClick={onProfileClick}
         onCartClick={onCartClick}
         onWishlistClick={onWishlistClick}
+        onQuickReset={onQuickReset}
+        showResetTrigger={currentView !== "wishlist"}
         cartCount={cartCount}
       />
       <div className="relative flex-1 overflow-y-auto">{children}</div>
-      <ResetFAB onQuickReset={onQuickReset} hidden={currentView === "wishlist"} />
     </div>
   );
 }
