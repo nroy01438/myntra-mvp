@@ -49,12 +49,15 @@ special-casing for "new" vs. "seed" products.
   returns to the landing screen.
 - **Wishlist** (`components/WishlistTab.js`) — its own screen, reached by
   clicking the nav's Wishlist icon directly (just like Profile/Bag — no
-  drawer in the way). Whenever there's something to reset, a small
-  "✨ Reset Now" pill floats directly beneath the icon itself (not a
-  generic button floating over the page content) — a shortcut straight
-  into the reset session, hidden once you're already on the Wishlist
-  screen. The screen itself is a `grid → session → summary` state machine,
-  all in place (no further route
+  drawer in the way). Clicking it always shows the grid, even if a reset
+  session or the summary was already in progress there (a `gridRequested`
+  flag in context forces this, since the component doesn't remount when
+  the icon is clicked while already on the wishlist screen). Whenever
+  there's something to reset, a small "✨ Reset Now" pill floats directly
+  beneath the icon itself (not a generic button floating over the page
+  content) — a shortcut straight into the reset session, hidden once
+  you're already on the Wishlist screen. The screen itself is a
+  `grid → session → summary` state machine, all in place (no further route
   change):
   1. **Grid** — every wishlisted item, no verdicts yet (proves the clutter
      problem before the tool solves it), with the "Begin Reset" button

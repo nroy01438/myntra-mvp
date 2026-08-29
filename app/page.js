@@ -10,7 +10,7 @@ import ProfileTab from "@/components/ProfileTab";
 import WishlistTab from "@/components/WishlistTab";
 
 export default function AppRoot() {
-  const { requestAutoReset } = useWishlist();
+  const { requestAutoReset, requestGrid } = useWishlist();
   // "home" | "category" | "wishlist" | "cart" | "profile"
   const [view, setView] = useState("home");
   const [activeCategory, setActiveCategory] = useState(null);
@@ -28,6 +28,9 @@ export default function AppRoot() {
   function goWishlist() {
     setActiveCategory(null);
     setView("wishlist");
+    // Clicking the icon always means "show me the wishlist" — force the
+    // grid view even if a session/summary was already in progress there.
+    requestGrid();
   }
 
   function goCart() {
@@ -41,8 +44,11 @@ export default function AppRoot() {
   }
 
   function goQuickReset() {
+    // Deliberately not goWishlist() — that forces the grid, but this wants
+    // the session to start directly regardless of current phase.
     requestAutoReset();
-    goWishlist();
+    setActiveCategory(null);
+    setView("wishlist");
   }
 
   return (

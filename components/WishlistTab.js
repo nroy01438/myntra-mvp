@@ -41,6 +41,8 @@ export default function WishlistTab({ onClose }) {
     recordResult,
     autoResetRequested,
     clearAutoResetRequest,
+    gridRequested,
+    clearGridRequest,
   } = useWishlist();
 
   function handleBeginReset() {
@@ -60,6 +62,19 @@ export default function WishlistTab({ onClose }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoResetRequested, phase]);
+
+  // Clicking the nav's Wishlist icon directly always means "show me the
+  // wishlist" — force back to the grid even if a session/summary was
+  // already in progress (this component doesn't remount when the icon is
+  // clicked while already on the wishlist screen, so phase would otherwise
+  // just sit wherever it was).
+  useEffect(() => {
+    if (gridRequested) {
+      setPhase("grid");
+      clearGridRequest();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gridRequested]);
 
   function handleItemComplete(result) {
     logEvent(result);
