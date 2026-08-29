@@ -31,12 +31,13 @@ screen.
 **Shared state** (`lib/WishlistContext.js`) is a single client-side model:
 a static `catalog` (all 18 products, each with real LLM-derived
 `crowdStats`), a toggleable `wishlistIds` set (which catalog items are
-currently saved — seeded with all 18 to match the "cluttered wishlist"
-premise, but a normal add/remove set from then on), and a `cart`. Because
-every catalog product already carries real crowdStats, anything added to
-the wishlist from Home runs through the **exact same** deterministic
-verdict matrix and LLM reasoning as the original 18 — there's no
-special-casing for "new" vs. "seed" products.
+currently saved — seeded with 5 (`DEFAULT_WISHLIST_IDS`, deliberately
+picked so all four verdict types are reachable depending on the reason you
+pick), not the full catalog, but a normal add/remove set from then on),
+and a `cart`. Because every catalog product already carries real
+crowdStats, anything added to the wishlist from Home runs through the
+**exact same** deterministic verdict matrix and LLM reasoning as the
+original 5 — there's no special-casing for "new" vs. "seed" products.
 
 - **Home** (`components/HomeTab.js`) — the landing screen: a promo banner,
   a "shop by category" tile grid, then the full catalog grid. Heart a
@@ -44,9 +45,10 @@ special-casing for "new" vs. "seed" products.
   directly, skipping the wishlist entirely (a normal e-commerce shortcut).
 - **Category** (`components/CategoryTab.js`) — a real listing screen for
   one category, reached by clicking a Home tile or a top-nav category link
-  (Men/Women/Kids/Home/Beauty/GenZ/Studio — see `lib/categoryNav.js`,
-  mapped to this demo's actual product categories). A "← Back to Home" link
-  returns to the landing screen.
+  (Men/Women/GenZ — see `lib/categoryNav.js`, mapped to this demo's actual
+  product categories; Kids/Home/Beauty/Studio were dropped from the nav
+  rather than left pointing at an empty category with no matching
+  products). A "← Back to Home" link returns to the landing screen.
 - **Wishlist** (`components/WishlistTab.js`) — its own screen, reached by
   clicking the nav's Wishlist icon directly (just like Profile/Bag — no
   drawer in the way). Clicking it always shows the grid, even if a reset
