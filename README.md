@@ -16,24 +16,38 @@ their wishlist down to what matters, without any monetary incentive.
 
 ## How it works
 
-1. **Landing** — shows the real wishlist count and a CTA into the flow.
-2. **Wishlist overview** — a static grid of every saved item, no verdicts
-   yet. This is deliberate: it visually proves the clutter problem before
-   the tool solves it.
-3. **Reset session** — one item at a time. Tap why you saved it (Love it /
-   For an event / Just browsing / Waiting for a deal). A deterministic rule
-   matrix (`/lib/verdictMatrix.js`, pure function, no LLM involved in the
-   decision) combines that reason with the item's crowd-behavior stats into
-   one verdict: **buy / keep / remove / disagreement**. An LLM call
-   (`/app/api/reasoning`) then writes a short plain-language sentence
-   explaining *that* verdict using the item's real numbers — for
-   disagreement cases (you love it, but the crowd mostly didn't buy it) it
-   writes a longer explanation referencing actual review snippets. You act
-   with Buy Now / Keep / Remove buttons, or swipe (left = remove, right =
-   buy, up = keep) — both are equally valid.
-4. **Summary** — tallies bought/kept/removed from your actual session and
-   shows a genuine "your wishlist just got X% more useful" stat
-   ((bought + kept) / original count), with a donut breakdown.
+There's a single route (`/`). Opening it drops you straight into a
+persistent app shell — top bar (wordmark, a visual-only search bar, cart
+icon) and a bottom tab bar (Home / Wishlist / Cart / Profile, Wishlist
+active by default) — with the wishlist grid as the immediate content, no
+marketing page first. Only the content area between those bars ever
+changes; the shell itself never unmounts or navigates away, so it reads as
+an app already sitting on its Wishlist screen rather than a website
+explaining a feature. Home/Cart/Profile are real, clickable tabs backed by
+a static placeholder — only Wishlist has logic behind it.
+
+1. **Wishlist grid** (`components/WishlistTab.js`, "grid" phase) — every
+   saved item, no verdicts yet. This is deliberate: it visually proves the
+   clutter problem before the tool solves it.
+2. **Reset session** ("session" phase) — tapping "Begin Reset" morphs the
+   *same* screen in place into a one-at-a-time session (an overlay bounded
+   to the content area only — the shell around it doesn't move). Tap why
+   you saved it (Love it / For an event / Just browsing / Waiting for a
+   deal). A deterministic rule matrix (`/lib/verdictMatrix.js`, pure
+   function, no LLM involved in the decision) combines that reason with the
+   item's crowd-behavior stats into one verdict: **buy / keep / remove /
+   disagreement**. An LLM call (`/app/api/reasoning`) then writes a short
+   plain-language sentence explaining *that* verdict using the item's real
+   numbers — for disagreement cases (you love it, but the crowd mostly
+   didn't buy it) it writes a longer explanation referencing actual review
+   snippets. You act with Buy Now / Keep / Remove buttons, or swipe (left =
+   remove, right = buy, up = keep) — both are equally valid.
+3. **Summary** ("summary" phase) — once every item is processed, the same
+   screen morphs again into the summary: tallies bought/kept/removed from
+   your actual session and a genuine "your wishlist just got X% more
+   useful" stat ((bought + kept) / original count), with a donut breakdown.
+   "Done" returns to the (now empty) grid; "Start Another Session" resets
+   the session state.
 
 ## Setup
 

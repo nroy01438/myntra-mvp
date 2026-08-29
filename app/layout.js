@@ -1,7 +1,5 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import Nav from "@/components/Nav";
-import DisclaimerBadge from "@/components/DisclaimerBadge";
 import { WishlistProvider } from "@/lib/WishlistContext";
 
 const geistSans = localFont({
@@ -25,13 +23,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-neutral-50 antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} overscroll-none antialiased`}
       >
-        <WishlistProvider>
-          <Nav />
-          <main className="pb-20">{children}</main>
-          <DisclaimerBadge />
-        </WishlistProvider>
+        <WishlistProvider>{children}</WishlistProvider>
       </body>
     </html>
   );

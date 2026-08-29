@@ -1,12 +1,13 @@
 /**
- * Persistent, always-visible disclaimer badge: this is an unaffiliated
- * concept prototype for a product-management case study, not a real Myntra
- * product. Rendered in the root layout so it appears on every screen.
+ * Persistent, always-visible disclaimer: this is an unaffiliated concept
+ * prototype for a product-management case study, not a real Myntra product.
+ * Rendered as a slim top banner, above the app shell, on every screen/state
+ * — never obscured by the bottom tab bar.
  */
 export default function DisclaimerBadge() {
   return (
-    <div className="fixed bottom-3 left-1/2 z-50 w-[92%] max-w-md -translate-x-1/2 rounded-full border border-coral-200 bg-white/95 px-4 py-2 text-center text-[11px] font-medium leading-tight text-neutral-500 shadow-lg backdrop-blur sm:w-auto">
-        Unaffiliated concept prototype — case study demo, not affiliated with Myntra or Myntra Designs Pvt Ltd.
-      </div>
+    <div className="shrink-0 bg-neutral-800 px-3 py-1 text-center text-[10px] font-medium leading-tight text-neutral-200">
+      Unaffiliated concept prototype — case study demo, not affiliated with Myntra or Myntra Designs Pvt Ltd.
+    </div>
   );
 }
