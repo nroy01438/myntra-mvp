@@ -142,7 +142,7 @@ function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, on
           onClick={onBeginReset}
           className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600"
         >
-          Begin Reset
+          ✨ Begin Reset
           <span aria-hidden>→</span>
         </button>
       )}
@@ -150,8 +150,8 @@ function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, on
       {wishlistItems.length > 0 ? (
         <>
           <p className="mt-3 max-w-2xl rounded-xl bg-coral-50 px-4 py-2.5 text-xs text-coral-700 sm:text-sm">
-            Dozens of items, no signal on which ones you&apos;ll actually buy.
-            That&apos;s the problem Wishlist Reset solves next.
+            {wishlistItems.length} maybes, zero decisions. Let&apos;s turn every one
+            into a yes, a no, or a not-yet — in under a minute.
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-3 pb-6 sm:grid-cols-3 md:grid-cols-4">

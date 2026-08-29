@@ -62,7 +62,7 @@ export default function SummaryScreen({ originalCount, bought, kept, removed }) 
   return (
     <div className="mx-auto max-w-md px-4 pt-10 text-center">
       <span className="mb-3 inline-block rounded-full bg-coral-50 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-coral-600">
-        Reset complete
+        🎉 Reset complete
       </span>
       <h1 className="text-2xl font-extrabold text-neutral-900 sm:text-3xl">
         Your wishlist just got{" "}

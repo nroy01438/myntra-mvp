@@ -1,7 +1,6 @@
 "use client";
 
 import { useWishlist } from "@/lib/WishlistContext";
-import ResetNudgeBanner from "@/components/ResetNudgeBanner";
 
 const STATIC_MENU = ["Orders", "Addresses", "Payment Methods", "Help Center"];
 
@@ -11,7 +10,7 @@ const STATIC_MENU = ["Orders", "Addresses", "Payment Methods", "Help Center"];
  * reset-session action feeds into `lib/analytics.js`, ties the case study's
  * analytics hook to something visible in the UI.
  */
-export default function ProfileTab({ onOpenReset }) {
+export default function ProfileTab() {
   const { results } = useWishlist();
 
   const total = results.length;
@@ -27,9 +26,7 @@ export default function ProfileTab({ onOpenReset }) {
 
   return (
     <div className="mx-auto max-w-2xl px-4 pb-6 pt-4 sm:px-6">
-      <ResetNudgeBanner onOpenReset={onOpenReset} />
-
-      <div className="mt-4 flex items-center gap-3">
+      <div className="flex items-center gap-3">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-coral-100 text-lg font-bold text-coral-600">
           G
         </div>

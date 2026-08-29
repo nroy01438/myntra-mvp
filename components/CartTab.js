@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useWishlist } from "@/lib/WishlistContext";
-import ResetNudgeBanner from "@/components/ResetNudgeBanner";
 import ProductThumb from "@/components/ProductThumb";
 
 /**
@@ -10,7 +9,7 @@ import ProductThumb from "@/components/ProductThumb";
  * "Add to Cart" from Home) but "Checkout" is a simulated confirmation only —
  * no real payment or order backend, documented in the README.
  */
-export default function CartTab({ onOpenReset }) {
+export default function CartTab() {
   const { cart, removeFromCart, clearCart } = useWishlist();
   const [orderPlaced, setOrderPlaced] = useState(false);
 
@@ -43,7 +42,6 @@ export default function CartTab({ onOpenReset }) {
   if (cart.length === 0) {
     return (
       <div className="mx-auto max-w-5xl pb-6 pt-4">
-        <ResetNudgeBanner onOpenReset={onOpenReset} className="mx-4 sm:mx-6" />
         <div className="mx-auto flex max-w-md flex-col items-center px-4 pt-16 text-center">
           <span className="text-4xl">🛒</span>
           <h1 className="mt-3 text-xl font-extrabold text-neutral-900">
@@ -73,6 +71,7 @@ export default function CartTab({ onOpenReset }) {
           >
             <ProductThumb
               category={item.category}
+              seed={item.id}
               size="sm"
               className="h-20 w-16 shrink-0 overflow-hidden rounded-lg"
             />

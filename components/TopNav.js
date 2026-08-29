@@ -11,9 +11,8 @@ import { NAV_CATEGORIES } from "@/lib/categoryNav";
  * app's bottom tab bar. Every item here is a real navigation: the wordmark
  * returns to Home, category links go to that category's own listing
  * screen (the same handler Home's tiles use), Profile/Cart/Wishlist each
- * switch straight to their screen. Wishlist additionally shows a small
- * floating "Reset Now" pill on hover (see WishlistHoverCard) as a shortcut
- * into the reset session — not a preview drawer.
+ * switch straight to their screen. The reset shortcut lives in the
+ * always-visible floating button (components/ResetFAB.js), not here.
  */
 export default function TopNav({
   activeCategory,
@@ -22,7 +21,6 @@ export default function TopNav({
   onProfileClick,
   onCartClick,
   onWishlistClick,
-  onQuickReset,
   cartCount,
 }) {
   return (
@@ -52,7 +50,7 @@ export default function TopNav({
             <span className="hidden text-[11px] font-medium sm:inline">Profile</span>
           </button>
 
-          <WishlistHoverCard onNavigate={onWishlistClick} onQuickReset={onQuickReset} />
+          <WishlistHoverCard onNavigate={onWishlistClick} />
 
           <button
             type="button"

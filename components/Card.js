@@ -12,7 +12,12 @@ export default function Card({ product, inWishlist, onToggleWishlist, onAddToCar
   return (
     <div className="overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm">
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-100">
-        <ProductThumb category={product.category} size="lg" className="h-full w-full" />
+        <ProductThumb
+          category={product.category}
+          seed={product.id}
+          size="lg"
+          className="h-full w-full"
+        />
         {onToggleWishlist && (
           <button
             type="button"

@@ -88,11 +88,10 @@ special-casing for "new" vs. "seed" products.
   lifetime `results` log (the same data `lib/analytics.js` logs per item)
   — items processed, % of the time you agreed with the verdict, and the
   bucket distribution by verdict.
-- **Reset nudge** (`components/ResetNudgeBanner.js`) — shown on Home, Cart,
-  and Profile whenever the wishlist isn't empty, so you don't have to
-  remember to go check it yourself. One tap opens the wishlist overlay and
-  auto-starts the reset session immediately (no second click needed) — the
-  same mechanism as the nav's "Reset Now" hover-card action.
+- **Floating reset button** (`components/ResetFAB.js`) — always visible
+  (not hover-gated) on every screen except the Wishlist screen itself,
+  whenever the wishlist isn't empty. One tap jumps straight into the reset
+  session — no second click needed.
 
 ## Setup
 
@@ -180,10 +179,11 @@ into case-study metrics without changing the event shape:
 - No database, no auth — fully stateless. Wishlist membership, cart
   contents, and session results all live only in React context in the
   browser tab and are lost on refresh.
-- Product images are category-tinted gradient blocks with a clothing-type
-  emoji (`components/ProductThumb.js`), not real product photography — per
-  the IP boundary spec, and it also means product visuals have zero
-  external network dependency.
+- Product images (`components/ProductThumb.js`) are category-relevant stock
+  photos from LoremFlickr (keyword-tagged, e.g. "dress", "saree", "jeans"
+  — not real Myntra photography, per the IP boundary spec), with a
+  graceful fallback to a category-tinted emoji block if a photo fails to
+  load. Both are placeholder imagery, never real product photography.
 - The Assistant Google Font stands in for Myntra's actual (licensed)
   webfont — visually close, not the real typeface.
 - Analytics events are console-logged / in-memory only, not persisted.
