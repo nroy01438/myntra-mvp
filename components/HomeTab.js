@@ -14,23 +14,17 @@ const CATEGORY_TILES = [
 ];
 
 /**
- * The landing screen: a hero banner and category tile grid, styled after a
- * typical Indian fashion e-commerce homepage (original art/copy — no real
- * brand promo codes or photography), followed by the catalog grid.
- * Heart-toggling a product here adds/removes it from the wishlist — since
- * every catalog product already carries real LLM-derived crowdStats,
- * anything added here runs through the exact same deterministic verdict
- * matrix and LLM reasoning in a reset session as the original 18 did.
+ * The landing screen: a hero banner, category tile grid, and the full
+ * catalog. Clicking a category tile is a real navigation to that
+ * category's own listing screen (components/CategoryTab.js) — the same
+ * handler the top nav's category links use — not an in-place filter here.
+ * Heart-toggling a product adds/removes it from the wishlist — since every
+ * catalog product already carries real LLM-derived crowdStats, anything
+ * added here runs through the exact same deterministic verdict matrix and
+ * LLM reasoning in a reset session as the original 18 did.
  */
-export default function HomeTab({ activeCategory, onCategoryClick }) {
+export default function HomeTab({ onCategoryClick }) {
   const { catalog, wishlistIds, toggleWishlist, addToCart } = useWishlist();
-
-  const filtered =
-    activeCategory && activeCategory.categories.length > 0
-      ? catalog.filter((p) => activeCategory.categories.includes(p.category))
-      : activeCategory
-      ? []
-      : catalog;
 
   return (
     <div className="mx-auto max-w-6xl pb-10 pt-4">
@@ -58,40 +52,22 @@ export default function HomeTab({ activeCategory, onCategoryClick }) {
       </div>
 
       <div className="mt-8 px-4 sm:px-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-neutral-900">
-            {activeCategory ? activeCategory.label : "Just for you"}
-          </h2>
-          {activeCategory && (
-            <button
-              onClick={() => onCategoryClick(null)}
-              className="text-xs font-semibold text-coral-500"
-            >
-              Clear filter
-            </button>
-          )}
-        </div>
+        <h2 className="text-lg font-bold text-neutral-900">Just for you</h2>
         <p className="mt-1 text-sm text-neutral-500">
           Heart something to save it to your wishlist, or add it to cart directly.
         </p>
 
-        {filtered.length === 0 ? (
-          <p className="mt-6 text-sm text-neutral-400">
-            No items in this category in our demo catalog yet.
-          </p>
-        ) : (
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-            {filtered.map((product) => (
-              <Card
-                key={product.id}
-                product={product}
-                inWishlist={wishlistIds.includes(product.id)}
-                onToggleWishlist={toggleWishlist}
-                onAddToCart={addToCart}
-              />
-            ))}
-          </div>
-        )}
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+          {catalog.map((product) => (
+            <Card
+              key={product.id}
+              product={product}
+              inWishlist={wishlistIds.includes(product.id)}
+              onToggleWishlist={toggleWishlist}
+              onAddToCart={addToCart}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -3,29 +3,42 @@
 import { useState } from "react";
 import { useWishlist } from "@/lib/WishlistContext";
 import { HeartIcon } from "@/components/icons";
-import ProductThumb from "@/components/ProductThumb";
 
 /**
- * The Wishlist nav icon is a hover trigger (click also toggles it, so it
- * still works on touch devices) — not a standing tab. Hovering shows a
- * quick-preview dropdown; from there, "View Wishlist" or "Reset Now" opens
- * the full wishlist overlay (grid/session/summary), unchanged underneath.
+ * The Wishlist nav icon. Clicking it navigates straight to the Wishlist
+ * screen (like Cart/Profile) — no drawer/dropdown in the way. Hovering it
+ * (desktop only) additionally surfaces a small floating "Reset Now" pill
+ * above the icon, a quick shortcut into the reset session without a full
+ * preview drawer.
  */
-export default function WishlistHoverCard({ onOpenWishlist, onOpenReset }) {
+export default function WishlistHoverCard({ onNavigate, onQuickReset }) {
   const { wishlistItems } = useWishlist();
-  const [open, setOpen] = useState(false);
-  const preview = wishlistItems.slice(0, 3);
+  const [hovering, setHovering] = useState(false);
 
   return (
     <div
       className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
     >
+      {hovering && wishlistItems.length > 0 && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setHovering(false);
+            onQuickReset();
+          }}
+          className="absolute right-0 top-full z-30 mt-2 whitespace-nowrap rounded-full bg-coral-500 px-3 py-1.5 text-xs font-semibold text-white shadow-lg transition hover:bg-coral-600"
+        >
+          🧹 Reset Now
+        </button>
+      )}
+
       <button
         type="button"
         data-testid="nav-wishlist"
-        onClick={() => setOpen((o) => !o)}
+        onClick={onNavigate}
         className="flex flex-col items-center gap-0.5 px-1 text-neutral-600 transition hover:text-coral-500"
       >
         <span className="relative">
@@ -38,58 +51,6 @@ export default function WishlistHoverCard({ onOpenWishlist, onOpenReset }) {
         </span>
         <span className="hidden text-[11px] font-medium sm:inline">Wishlist</span>
       </button>
-
-      {open && (
-        <div className="absolute right-0 top-full z-30 w-72 max-w-[90vw] rounded-2xl border border-neutral-100 bg-white p-3 shadow-xl">
-          {wishlistItems.length === 0 ? (
-            <p className="px-1 py-2 text-sm text-neutral-500">
-              Your wishlist is empty. Heart something on Home to save it here.
-            </p>
-          ) : (
-            <>
-              <div className="space-y-2">
-                {preview.map((item) => (
-                  <div key={item.id} className="flex items-center gap-2">
-                    <ProductThumb
-                      category={item.category}
-                      size="sm"
-                      className="h-10 w-8 shrink-0 overflow-hidden rounded"
-                    />
-                    <span className="truncate text-xs font-medium text-neutral-700">
-                      {item.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              {wishlistItems.length > preview.length && (
-                <p className="mt-2 px-1 text-xs text-neutral-400">
-                  +{wishlistItems.length - preview.length} more
-                </p>
-              )}
-              <div className="mt-3 space-y-1.5">
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    onOpenReset();
-                  }}
-                  className="w-full rounded-full bg-coral-500 py-2 text-xs font-semibold text-white transition hover:bg-coral-600"
-                >
-                  Reset Now →
-                </button>
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    onOpenWishlist();
-                  }}
-                  className="w-full rounded-full border border-neutral-200 py-2 text-xs font-semibold text-neutral-600 transition hover:bg-neutral-50"
-                >
-                  View Wishlist
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
     </div>
   );
 }

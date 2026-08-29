@@ -16,15 +16,17 @@ their wishlist down to what matters, without any monetary incentive.
 
 ## How it works
 
-There's a single route (`/`). Opening it drops you straight into **Home**
-as the landing screen — a persistent top nav (wordmark, category links,
-search bar, and a Profile / Wishlist / Bag icon strip on the right, styled
-after a typical Indian fashion e-commerce desktop layout) sits above the
-content, and never unmounts or navigates away. Wishlist has **no standing
-tab** — the nav's Wishlist icon is a hover trigger (click also toggles it,
-so it still works on touch) that shows a quick-preview dropdown; from
-there, "View Wishlist" or "Reset Now" opens the full wishlist experience as
-an overlay on top of whatever screen (Home/Profile/Cart) is behind it.
+There's a single route (`/`), but `app/page.js` runs its own lightweight
+view router (`home` / `category` / `wishlist` / `cart` / `profile`) so every
+click is a real navigation — no in-place filtering standing in for a
+screen. Opening it drops you straight into **Home** as the landing screen.
+A persistent top nav (wordmark, category links, search bar, and a
+Profile / Wishlist / Bag icon strip on the right, styled after a typical
+Indian fashion e-commerce desktop layout) sits above the content and never
+unmounts. Every nav item actually goes somewhere: the wordmark returns to
+Home, category links and Home's tiles both open that category's own
+listing screen, and Profile/Wishlist/Bag each switch straight to their
+screen.
 
 **Shared state** (`lib/WishlistContext.js`) is a single client-side model:
 a static `catalog` (all 18 products, each with real LLM-derived
@@ -36,19 +38,26 @@ the wishlist from Home runs through the **exact same** deterministic
 verdict matrix and LLM reasoning as the original 18 — there's no
 special-casing for "new" vs. "seed" products.
 
-- **Home** (`components/HomeTab.js`) — the landing screen: a promo banner
-  and a "shop by category" tile grid (original copy, no real coupon codes),
-  then the catalog grid. The top nav's category links (Men/Women/Kids/
-  Home/Beauty/GenZ/Studio — see `lib/categoryNav.js`) and the tile grid both
-  filter the same catalog grid by this demo's actual product categories.
-  Heart a product to add/remove it from the wishlist; "Add to Cart" adds it
+- **Home** (`components/HomeTab.js`) — the landing screen: a promo banner,
+  a "shop by category" tile grid, then the full catalog grid. Heart a
+  product to add/remove it from the wishlist; "Add to Cart" adds it
   directly, skipping the wishlist entirely (a normal e-commerce shortcut).
-- **Wishlist** (`components/WishlistTab.js`) — opened from the nav's hover
-  card, not a tab. A `grid → session → summary` state machine, all in the
-  same overlay (no route change anywhere):
+- **Category** (`components/CategoryTab.js`) — a real listing screen for
+  one category, reached by clicking a Home tile or a top-nav category link
+  (Men/Women/Kids/Home/Beauty/GenZ/Studio — see `lib/categoryNav.js`,
+  mapped to this demo's actual product categories). A "← Back to Home" link
+  returns to the landing screen.
+- **Wishlist** (`components/WishlistTab.js`) — its own screen, reached by
+  clicking the nav's Wishlist icon directly (just like Profile/Bag — no
+  drawer in the way). Hovering the icon (desktop) additionally shows a
+  small floating "🧹 Reset Now" pill above it — a shortcut straight into the
+  reset session, not a preview drawer. The screen itself is a
+  `grid → session → summary` state machine, all in place (no further route
+  change):
   1. **Grid** — every wishlisted item, no verdicts yet (proves the clutter
-     problem before the tool solves it). Each card's heart also lets you
-     unwishlist directly, without a full reset session.
+     problem before the tool solves it), with the "Begin Reset" button
+     right there. Each card's heart also lets you unwishlist directly,
+     without a full reset session.
   2. **Reset session** — "Begin Reset" morphs the grid in place into a
      one-at-a-time session (an overlay bounded to the content area only —
      the shell doesn't move). Tap why you saved it (Love it / For an event /

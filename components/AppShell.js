@@ -6,18 +6,17 @@ import TopNav from "@/components/TopNav";
 
 /**
  * The persistent app shell: disclaimer banner and top nav never unmount or
- * navigate away — only the content area beneath changes. Wishlist has no
- * standing tab of its own; it's a hover-triggered overlay (see
- * WishlistHoverCard + the wishlistOpen state in app/page.js) that renders
- * on top of whatever view (Home/Profile/Cart) is currently showing.
+ * navigate away — only the content area beneath changes as app/page.js
+ * switches views. Every nav item is a real navigation (see TopNav).
  */
 export default function AppShell({
   activeCategory,
   onCategoryClick,
+  onLogoClick,
   onProfileClick,
   onCartClick,
-  onOpenWishlist,
-  onOpenReset,
+  onWishlistClick,
+  onQuickReset,
   children,
 }) {
   const { cart } = useWishlist();
@@ -29,10 +28,11 @@ export default function AppShell({
       <TopNav
         activeCategory={activeCategory}
         onCategoryClick={onCategoryClick}
+        onLogoClick={onLogoClick}
         onProfileClick={onProfileClick}
         onCartClick={onCartClick}
-        onOpenWishlist={onOpenWishlist}
-        onOpenReset={onOpenReset}
+        onWishlistClick={onWishlistClick}
+        onQuickReset={onQuickReset}
         cartCount={cartCount}
       />
       <div className="relative flex-1 overflow-y-auto">{children}</div>

@@ -8,27 +8,33 @@ import { NAV_CATEGORIES } from "@/lib/categoryNav";
  * Desktop-style top nav, matching a typical Indian fashion e-commerce
  * structure: wordmark, a row of category links, a search bar, and a
  * right-hand icon strip (Profile / Wishlist / Bag) — rather than a mobile
- * app's bottom tab bar. Category links are real (they filter Home's
- * product grid via `lib/categoryNav.js`) and stay reachable on every
- * screen size as a horizontally-scrollable row, rather than disappearing
- * below a breakpoint. Wishlist is a hover trigger (see WishlistHoverCard),
- * not a standing tab.
+ * app's bottom tab bar. Every item here is a real navigation: the wordmark
+ * returns to Home, category links go to that category's own listing
+ * screen (the same handler Home's tiles use), Profile/Cart/Wishlist each
+ * switch straight to their screen. Wishlist additionally shows a small
+ * floating "Reset Now" pill on hover (see WishlistHoverCard) as a shortcut
+ * into the reset session — not a preview drawer.
  */
 export default function TopNav({
   activeCategory,
   onCategoryClick,
+  onLogoClick,
   onProfileClick,
   onCartClick,
-  onOpenWishlist,
-  onOpenReset,
+  onWishlistClick,
+  onQuickReset,
   cartCount,
 }) {
   return (
     <div className="shrink-0 border-b border-neutral-200 bg-white">
       <div className="flex items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
-        <span className="shrink-0 text-2xl font-black italic tracking-tight text-coral-500">
+        <button
+          type="button"
+          onClick={onLogoClick}
+          className="shrink-0 text-2xl font-black italic tracking-tight text-coral-500"
+        >
           Myntra
-        </span>
+        </button>
 
         <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg bg-neutral-100 px-3 py-2 text-neutral-400">
           <SearchIcon className="h-4 w-4 shrink-0" />
@@ -46,7 +52,7 @@ export default function TopNav({
             <span className="hidden text-[11px] font-medium sm:inline">Profile</span>
           </button>
 
-          <WishlistHoverCard onOpenWishlist={onOpenWishlist} onOpenReset={onOpenReset} />
+          <WishlistHoverCard onNavigate={onWishlistClick} onQuickReset={onQuickReset} />
 
           <button
             type="button"

@@ -8,13 +8,11 @@ import SwipeSession from "@/components/SwipeSession";
 import SummaryScreen from "@/components/SummaryScreen";
 
 /**
- * The wishlist experience, opened as a full overlay on top of whatever view
- * (Home/Profile/Cart) is currently showing — Wishlist has no standing tab
- * of its own, it's triggered from the nav's hover card (see
- * WishlistHoverCard + app/page.js). "grid" is the default (before) state;
- * "Begin Reset" morphs the same overlay into the one-at-a-time session;
- * finishing the last item morphs it again into the summary. `onClose`
- * dismisses the overlay entirely, back to whatever was behind it — always
+ * The wishlist screen — reached by clicking the nav's Wishlist icon, just
+ * like Cart/Profile (app/page.js). "grid" is the default (before) state,
+ * showing every saved item with the "Begin Reset" button; that morphs the
+ * same screen in place into the one-at-a-time session; finishing the last
+ * item morphs it again into the summary. `onClose` returns to Home — always
  * reachable (a close control appears on every phase, not just the grid),
  * so a session never traps the user with no way out.
  *
@@ -81,7 +79,7 @@ export default function WishlistTab({ onClose }) {
   }
 
   return (
-    <div className="absolute inset-0 z-30 overflow-y-auto bg-neutral-50">
+    <div className="relative">
       {phase === "session" ? (
         <SessionView
           sessionQueue={sessionQueue}
@@ -116,7 +114,7 @@ function CloseButton({ onClose }) {
     <button
       type="button"
       onClick={onClose}
-      aria-label="Close wishlist"
+      aria-label="Back to Home"
       className="shrink-0 rounded-full border border-neutral-200 bg-white p-2 text-neutral-500 shadow-sm transition hover:bg-neutral-50"
     >
       ✕

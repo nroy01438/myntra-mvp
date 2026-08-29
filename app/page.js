@@ -4,46 +4,62 @@ import { useState } from "react";
 import { useWishlist } from "@/lib/WishlistContext";
 import AppShell from "@/components/AppShell";
 import HomeTab from "@/components/HomeTab";
+import CategoryTab from "@/components/CategoryTab";
 import CartTab from "@/components/CartTab";
 import ProfileTab from "@/components/ProfileTab";
 import WishlistTab from "@/components/WishlistTab";
 
 export default function AppRoot() {
   const { requestAutoReset } = useWishlist();
-  const [view, setView] = useState("home"); // "home" | "profile" | "cart" — the landing screen
+  // "home" | "category" | "wishlist" | "cart" | "profile"
+  const [view, setView] = useState("home");
   const [activeCategory, setActiveCategory] = useState(null);
-  const [wishlistOpen, setWishlistOpen] = useState(false);
 
-  function handleCategoryClick(category) {
+  function goHome() {
     setView("home");
-    setActiveCategory((prev) => (prev?.label === category?.label ? null : category));
+    setActiveCategory(null);
   }
 
-  function handleOpenWishlist() {
-    setWishlistOpen(true);
+  function goCategory(category) {
+    setActiveCategory(category);
+    setView("category");
   }
 
-  function handleOpenReset() {
+  function goWishlist() {
+    setActiveCategory(null);
+    setView("wishlist");
+  }
+
+  function goCart() {
+    setActiveCategory(null);
+    setView("cart");
+  }
+
+  function goProfile() {
+    setActiveCategory(null);
+    setView("profile");
+  }
+
+  function goQuickReset() {
     requestAutoReset();
-    setWishlistOpen(true);
+    goWishlist();
   }
 
   return (
     <AppShell
       activeCategory={activeCategory}
-      onCategoryClick={handleCategoryClick}
-      onProfileClick={() => setView("profile")}
-      onCartClick={() => setView("cart")}
-      onOpenWishlist={handleOpenWishlist}
-      onOpenReset={handleOpenReset}
+      onCategoryClick={goCategory}
+      onLogoClick={goHome}
+      onProfileClick={goProfile}
+      onCartClick={goCart}
+      onWishlistClick={goWishlist}
+      onQuickReset={goQuickReset}
     >
-      {view === "home" && (
-        <HomeTab activeCategory={activeCategory} onCategoryClick={handleCategoryClick} />
-      )}
-      {view === "profile" && <ProfileTab onOpenReset={handleOpenReset} />}
-      {view === "cart" && <CartTab onOpenReset={handleOpenReset} />}
-
-      {wishlistOpen && <WishlistTab onClose={() => setWishlistOpen(false)} />}
+      {view === "home" && <HomeTab onCategoryClick={goCategory} />}
+      {view === "category" && <CategoryTab category={activeCategory} onBack={goHome} />}
+      {view === "wishlist" && <WishlistTab onClose={goHome} />}
+      {view === "cart" && <CartTab onOpenReset={goQuickReset} />}
+      {view === "profile" && <ProfileTab onOpenReset={goQuickReset} />}
     </AppShell>
   );
 }
