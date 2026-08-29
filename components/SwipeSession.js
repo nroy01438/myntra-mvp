@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import { getVerdict, REASONS, REASON_LABELS } from "@/lib/verdictMatrix";
 import VerdictBadge from "@/components/VerdictBadge";
 
@@ -25,8 +25,10 @@ const FALLBACK_REASONING = {
 /**
  * One item, full-screen card. Two internal states:
  * 1. "choosing" — reason chips visible, no verdict yet.
- * 2. "revealed" — verdict shown, Buy/Keep/Remove buttons AND swipe gesture
- *    are both valid ways to act (left=remove, right=buy, up=keep).
+ * 2. "revealed" — verdict shown, Buy/Keep/Remove buttons AND a left/right
+ *    swipe gesture are both valid ways to act (left = remove, right = buy).
+ *    "Keep" is deliberately button-only — a two-direction horizontal swipe
+ *    reads more naturally than a third, vertical one.
  */
 export default function SwipeSession({ product, onComplete }) {
   const [reason, setReason] = useState(null);
@@ -34,6 +36,10 @@ export default function SwipeSession({ product, onComplete }) {
   const [reasoning, setReasoning] = useState("");
   const [isLoadingReasoning, setIsLoadingReasoning] = useState(false);
   const [exitDirection, setExitDirection] = useState(null);
+  const dragX = useMotionValue(0);
+  const rotate = useTransform(dragX, [-200, 200], [-12, 12]);
+  const removeOpacity = useTransform(dragX, [-120, -20, 0], [1, 0, 0]);
+  const buyOpacity = useTransform(dragX, [0, 20, 120], [0, 0, 1]);
 
   async function handleReasonTap(selectedReason) {
     if (reason) return; // already chosen for this card
@@ -79,22 +85,18 @@ export default function SwipeSession({ product, onComplete }) {
 
   function handleAction(action) {
     if (!verdictResult) return;
-    setExitDirection(action === "buy" ? "right" : action === "remove" ? "left" : "up");
+    setExitDirection(action === "buy" ? "right" : action === "remove" ? "left" : "fade");
     setTimeout(() => finish(action, "button"), 150);
   }
 
   function handleDragEnd(_, info) {
     if (!verdictResult) return;
-    const { offset } = info;
-    if (offset.x > SWIPE_THRESHOLD) {
+    if (info.offset.x > SWIPE_THRESHOLD) {
       setExitDirection("right");
       finish("buy", "swipe");
-    } else if (offset.x < -SWIPE_THRESHOLD) {
+    } else if (info.offset.x < -SWIPE_THRESHOLD) {
       setExitDirection("left");
       finish("remove", "swipe");
-    } else if (offset.y < -SWIPE_THRESHOLD) {
-      setExitDirection("up");
-      finish("keep", "swipe");
     }
   }
 
@@ -103,22 +105,39 @@ export default function SwipeSession({ product, onComplete }) {
       ? { x: 500, opacity: 0, rotate: 15 }
       : exitDirection === "left"
       ? { x: -500, opacity: 0, rotate: -15 }
-      : exitDirection === "up"
-      ? { y: -500, opacity: 0 }
+      : exitDirection === "fade"
+      ? { opacity: 0, scale: 0.95 }
       : {};
 
   const revealed = Boolean(verdictResult);
 
   return (
     <motion.div
-      className="mx-auto w-full max-w-sm touch-none select-none"
-      drag={revealed ? true : false}
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      className="relative mx-auto w-full max-w-sm touch-none select-none"
+      drag={revealed ? "x" : false}
+      style={{ x: dragX, rotate }}
+      dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
       onDragEnd={handleDragEnd}
-      animate={exitDirection ? exitAnimation : { x: 0, y: 0, opacity: 1, rotate: 0 }}
+      animate={exitDirection ? exitAnimation : { x: 0, opacity: 1, rotate: 0 }}
       transition={{ duration: 0.25 }}
     >
+      {revealed && (
+        <>
+          <motion.span
+            style={{ opacity: removeOpacity }}
+            className="pointer-events-none absolute left-4 top-4 z-10 rounded-full border-2 border-neutral-400 px-3 py-1 text-sm font-black uppercase tracking-wide text-neutral-400 -rotate-12"
+          >
+            Remove
+          </motion.span>
+          <motion.span
+            style={{ opacity: buyOpacity }}
+            className="pointer-events-none absolute right-4 top-4 z-10 rounded-full border-2 border-emerald-500 px-3 py-1 text-sm font-black uppercase tracking-wide text-emerald-500 rotate-12"
+          >
+            Buy
+          </motion.span>
+        </>
+      )}
       <div className="overflow-hidden rounded-3xl border border-neutral-100 bg-white shadow-xl">
         <div className="aspect-[4/5] w-full bg-neutral-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -193,7 +212,7 @@ export default function SwipeSession({ product, onComplete }) {
                 </button>
               </div>
               <p className="text-center text-[11px] text-neutral-400">
-                Or swipe: ← remove · ↑ keep · buy →
+                Or swipe: ← remove · buy →
               </p>
             </>
           )}

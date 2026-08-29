@@ -1,5 +1,6 @@
 "use client";
 
+import { useWishlist } from "@/lib/WishlistContext";
 import { HomeIcon, HeartIcon, CartIcon, ProfileIcon } from "@/components/icons";
 
 const TABS = [
@@ -10,11 +11,14 @@ const TABS = [
 ];
 
 /**
- * Persistent bottom tab bar. Only "wishlist" is functional; the others are
- * still real, clickable tabs (they switch to a lightweight placeholder
- * view) so the shell reads as a genuine app rather than a dead mockup.
+ * Persistent bottom tab bar. All four tabs are real and clickable; Home,
+ * Cart and Profile all have working (if simple) screens behind them, but
+ * only Wishlist runs the case study's core logic.
  */
 export default function TabBar({ activeTab, onTabChange }) {
+  const { cart } = useWishlist();
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+
   return (
     <div className="grid shrink-0 grid-cols-4 border-t border-neutral-200 bg-white">
       {TABS.map(({ id, label, Icon }) => {
@@ -23,12 +27,20 @@ export default function TabBar({ activeTab, onTabChange }) {
           <button
             key={id}
             type="button"
+            data-testid={`tab-${id}`}
             onClick={() => onTabChange(id)}
-            className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium transition ${
+            className={`relative flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium transition ${
               isActive ? "text-coral-500" : "text-neutral-400 hover:text-neutral-600"
             }`}
           >
-            <Icon className="h-5 w-5" fill={isActive && id === "wishlist" ? "currentColor" : "none"} />
+            <span className="relative">
+              <Icon className="h-5 w-5" fill={isActive && id === "wishlist" ? "currentColor" : "none"} />
+              {id === "cart" && cartCount > 0 && (
+                <span className="absolute -right-2 -top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-coral-500 px-1 text-[9px] font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </span>
             {label}
           </button>
         );

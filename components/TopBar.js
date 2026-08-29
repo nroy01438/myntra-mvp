@@ -2,10 +2,10 @@ import { SearchIcon, CartIcon } from "@/components/icons";
 
 /**
  * Persistent top bar: wordmark, a visual-only (non-functional) search bar,
- * and a cart icon. Part of the always-on app shell — never unmounted or
- * navigated away from.
+ * and a cart icon that jumps to the Cart tab. Part of the always-on app
+ * shell — never unmounted or navigated away from.
  */
-export default function TopBar() {
+export default function TopBar({ onCartClick, cartCount = 0 }) {
   return (
     <div className="flex shrink-0 items-center gap-3 border-b border-coral-100 bg-white px-3 py-2.5 sm:px-5">
       <span className="text-xl font-black italic tracking-tight text-coral-500">
@@ -19,10 +19,17 @@ export default function TopBar() {
 
       <button
         type="button"
-        aria-label="Cart"
+        onClick={onCartClick}
+        aria-label="Open cart"
+        data-testid="topbar-cart"
         className="relative shrink-0 rounded-full p-2 text-neutral-600 transition hover:bg-neutral-100"
       >
         <CartIcon className="h-5 w-5" />
+        {cartCount > 0 && (
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-coral-500 px-1 text-[9px] font-bold text-white">
+            {cartCount}
+          </span>
+        )}
       </button>
     </div>
   );

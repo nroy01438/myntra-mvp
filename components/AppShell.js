@@ -1,5 +1,6 @@
 "use client";
 
+import { useWishlist } from "@/lib/WishlistContext";
 import DisclaimerBadge from "@/components/DisclaimerBadge";
 import TopBar from "@/components/TopBar";
 import TabBar from "@/components/TabBar";
@@ -11,10 +12,13 @@ import TabBar from "@/components/TabBar";
  * on its Wishlist screen, rather than a website with separate pages.
  */
 export default function AppShell({ activeTab, onTabChange, children }) {
+  const { cart } = useWishlist();
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-neutral-50">
       <DisclaimerBadge />
-      <TopBar />
+      <TopBar onCartClick={() => onTabChange("cart")} cartCount={cartCount} />
       <div className="relative flex-1 overflow-y-auto">{children}</div>
       <TabBar activeTab={activeTab} onTabChange={onTabChange} />
     </div>

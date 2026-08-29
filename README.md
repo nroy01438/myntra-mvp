@@ -17,37 +17,66 @@ their wishlist down to what matters, without any monetary incentive.
 ## How it works
 
 There's a single route (`/`). Opening it drops you straight into a
-persistent app shell — top bar (wordmark, a visual-only search bar, cart
-icon) and a bottom tab bar (Home / Wishlist / Cart / Profile, Wishlist
-active by default) — with the wishlist grid as the immediate content, no
-marketing page first. Only the content area between those bars ever
-changes; the shell itself never unmounts or navigates away, so it reads as
-an app already sitting on its Wishlist screen rather than a website
-explaining a feature. Home/Cart/Profile are real, clickable tabs backed by
-a static placeholder — only Wishlist has logic behind it.
+persistent app shell — top bar (wordmark, a visual-only search bar, a real
+cart icon with a live count) and a bottom tab bar (Home / Wishlist / Cart /
+Profile, Wishlist active by default) — with the wishlist grid as the
+immediate content, no marketing page first. Only the content area between
+those bars ever changes; the shell itself never unmounts or navigates away,
+so it reads as an app already sitting on its Wishlist screen rather than a
+website explaining a feature. All four tabs are real, working screens.
 
-1. **Wishlist grid** (`components/WishlistTab.js`, "grid" phase) — every
-   saved item, no verdicts yet. This is deliberate: it visually proves the
-   clutter problem before the tool solves it.
-2. **Reset session** ("session" phase) — tapping "Begin Reset" morphs the
-   *same* screen in place into a one-at-a-time session (an overlay bounded
-   to the content area only — the shell around it doesn't move). Tap why
-   you saved it (Love it / For an event / Just browsing / Waiting for a
-   deal). A deterministic rule matrix (`/lib/verdictMatrix.js`, pure
-   function, no LLM involved in the decision) combines that reason with the
-   item's crowd-behavior stats into one verdict: **buy / keep / remove /
-   disagreement**. An LLM call (`/app/api/reasoning`) then writes a short
-   plain-language sentence explaining *that* verdict using the item's real
-   numbers — for disagreement cases (you love it, but the crowd mostly
-   didn't buy it) it writes a longer explanation referencing actual review
-   snippets. You act with Buy Now / Keep / Remove buttons, or swipe (left =
-   remove, right = buy, up = keep) — both are equally valid.
-3. **Summary** ("summary" phase) — once every item is processed, the same
-   screen morphs again into the summary: tallies bought/kept/removed from
-   your actual session and a genuine "your wishlist just got X% more
-   useful" stat ((bought + kept) / original count), with a donut breakdown.
-   "Done" returns to the (now empty) grid; "Start Another Session" resets
-   the session state.
+**Shared state** (`lib/WishlistContext.js`) is a single client-side model:
+a static `catalog` (all 18 products, each with real LLM-derived
+`crowdStats`), a toggleable `wishlistIds` set (which catalog items are
+currently saved — seeded with all 18 to match the "cluttered wishlist"
+premise, but a normal add/remove set from then on), and a `cart`. Because
+every catalog product already carries real crowdStats, anything added to
+the wishlist from Home runs through the **exact same** deterministic
+verdict matrix and LLM reasoning as the original 18 — there's no
+special-casing for "new" vs. "seed" products.
+
+- **Home** (`components/HomeTab.js`) — browse the full catalog. Heart a
+  product to add/remove it from the wishlist; "Add to Cart" adds it
+  directly, skipping the wishlist entirely (a normal e-commerce shortcut).
+- **Wishlist** (`components/WishlistTab.js`) — a `grid → session → summary`
+  state machine, all in the same screen (no route change anywhere):
+  1. **Grid** — every wishlisted item, no verdicts yet (proves the clutter
+     problem before the tool solves it). Each card's heart also lets you
+     unwishlist directly, without a full reset session.
+  2. **Reset session** — "Begin Reset" morphs the grid in place into a
+     one-at-a-time session (an overlay bounded to the content area only —
+     the shell doesn't move). Tap why you saved it (Love it / For an event /
+     Just browsing / Waiting for a deal). The deterministic rule matrix
+     (`/lib/verdictMatrix.js`, pure function, no LLM involved in the
+     decision) combines that reason with the item's crowd-behavior stats
+     into one verdict: **buy / keep / remove / disagreement**. An LLM call
+     (`/app/api/reasoning`) then writes a short plain-language sentence
+     explaining *that* verdict using the item's real numbers — disagreement
+     cases get a longer explanation referencing actual review snippets. You
+     act with Buy Now / Keep / Remove buttons, or swipe (left = remove,
+     right = buy — a two-direction horizontal swipe, with a "Remove"/"Buy"
+     tint that follows your drag) — both are equally valid. **Buy Now**
+     adds the item to the cart and removes it from the wishlist; **Remove**
+     just removes it; **Keep** leaves it in the wishlist for next time.
+  3. **Summary** — once the session's queue is empty, the same screen
+     morphs again into the summary: tallies bought/kept/removed from *that*
+     session and a genuine "your wishlist just got X% more useful" stat
+     ((bought + kept) / original count), with a donut breakdown. "Done"
+     returns to the (now smaller) grid; "Start Another Session" does the
+     same.
+- **Cart** (`components/CartTab.js`) — real state, lists what you've
+  bought/added, remove-line-item, running total, and a **simulated**
+  checkout (no real payment/order backend — clearly labeled as such in the
+  UI).
+- **Profile** (`components/ProfileTab.js`) — no login in this MVP, so the
+  account section is static, but the stats card is real: it summarizes the
+  lifetime `results` log (the same data `lib/analytics.js` logs per item)
+  — items processed, % of the time you agreed with the verdict, and the
+  bucket distribution by verdict.
+- **Reset nudge** (`components/ResetNudgeBanner.js`) — shown on Home, Cart,
+  and Profile whenever the wishlist isn't empty, so you don't have to
+  remember to go check it yourself. One tap jumps to the Wishlist tab and
+  auto-starts the reset session immediately (no second click needed).
 
 ## Setup
 
@@ -132,12 +161,16 @@ into case-study metrics without changing the event shape:
 
 ## Known limitations (v1)
 
-- No database, no auth — fully stateless. Session state (which items were
-  processed, bought, kept, removed) lives only in React context in the
-  browser tab and is lost on refresh.
+- No database, no auth — fully stateless. Wishlist membership, cart
+  contents, and session results all live only in React context in the
+  browser tab and are lost on refresh.
 - Product images are placeholders (picsum.photos), not real product
   photography.
 - Analytics events are console-logged / in-memory only, not persisted.
+- Checkout on the Cart tab is a simulated confirmation only — no real
+  payment or order backend.
+- Search (top bar) is visual only; Home/Cart/Profile don't persist across
+  a refresh like Wishlist doesn't either.
 
 This is an unaffiliated concept prototype for a product-management case
 study — not a real Myntra product, and not affiliated with or endorsed by

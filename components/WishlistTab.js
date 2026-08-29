@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useWishlist } from "@/lib/WishlistContext";
 import { logEvent } from "@/lib/analytics";
 import Card from "@/components/Card";
@@ -12,37 +12,77 @@ import SummaryScreen from "@/components/SummaryScreen";
  * change. "grid" is the default (before) state; "Begin Reset" morphs the
  * same screen into the one-at-a-time session as an overlay bounded to the
  * content area (the app shell around it never moves); finishing the last
- * item morphs it again into the summary overlay. Verdict matrix, LLM
- * reasoning, and crowd-stats logic are untouched — only how the screens are
- * assembled changed.
+ * item morphs it again into the summary overlay.
+ *
+ * The session queue is local state, snapshotted from the live wishlist when
+ * a reset begins — wishlist membership itself lives in context (so Home can
+ * add/remove items too). "Buy Now" adds the item to cart and removes it
+ * from the wishlist; "Remove" just removes it; "Keep" leaves it in the
+ * wishlist for a future session. Verdict matrix, LLM reasoning, and
+ * crowd-stats logic are untouched — only how the screens are assembled.
  */
 export default function WishlistTab() {
   const [phase, setPhase] = useState("grid"); // "grid" | "session" | "summary"
-  const { items, setItems, results, recordResult, resetSession, originalCount } =
-    useWishlist();
+  const [sessionQueue, setSessionQueue] = useState([]);
+  const [sessionOriginal, setSessionOriginal] = useState(0);
+  const [sessionResults, setSessionResults] = useState([]);
+
+  const {
+    wishlistItems,
+    wishlistIds,
+    toggleWishlist,
+    removeFromWishlist,
+    addToCart,
+    recordResult,
+    autoResetRequested,
+    clearAutoResetRequest,
+  } = useWishlist();
 
   function handleBeginReset() {
+    setSessionQueue(wishlistItems);
+    setSessionOriginal(wishlistItems.length);
+    setSessionResults([]);
     setPhase("session");
   }
+
+  // A nudge banner elsewhere in the app can request an auto-start reset —
+  // honor it as soon as we're back on the grid with something to process.
+  useEffect(() => {
+    if (autoResetRequested && phase === "grid" && wishlistItems.length > 0) {
+      handleBeginReset();
+      clearAutoResetRequest();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoResetRequested, phase]);
 
   function handleItemComplete(result) {
     logEvent(result);
     recordResult(result);
-    const remaining = items.slice(1);
-    setItems(remaining);
+    setSessionResults((prev) => [...prev, result]);
+
+    const product = sessionQueue[0];
+    if (result.action === "buy") {
+      addToCart(product);
+      removeFromWishlist(product.id);
+    } else if (result.action === "remove") {
+      removeFromWishlist(product.id);
+    }
+    // "keep" leaves the product in the wishlist untouched.
+
+    const remaining = sessionQueue.slice(1);
+    setSessionQueue(remaining);
     if (remaining.length === 0) {
       setPhase("summary");
     }
   }
 
   function handleStartAnother() {
-    resetSession();
     setPhase("grid");
   }
 
   if (phase === "session") {
-    const currentIndex = originalCount - items.length;
-    const currentItem = items[0];
+    const currentIndex = sessionOriginal - sessionQueue.length;
+    const currentItem = sessionQueue[0];
 
     return (
       <div className="absolute inset-0 z-10 overflow-y-auto bg-neutral-50/98 backdrop-blur-sm">
@@ -51,11 +91,11 @@ export default function WishlistTab() {
             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-neutral-200">
               <div
                 className="h-full rounded-full bg-coral-500 transition-all"
-                style={{ width: `${(currentIndex / originalCount) * 100}%` }}
+                style={{ width: `${(currentIndex / sessionOriginal) * 100}%` }}
               />
             </div>
             <span className="whitespace-nowrap text-xs font-semibold text-neutral-500">
-              {currentIndex + 1} of {originalCount}
+              {currentIndex + 1} of {sessionOriginal}
             </span>
           </div>
 
@@ -74,14 +114,14 @@ export default function WishlistTab() {
   }
 
   if (phase === "summary") {
-    const bought = results.filter((r) => r.action === "buy").length;
-    const kept = results.filter((r) => r.action === "keep").length;
-    const removed = results.filter((r) => r.action === "remove").length;
+    const bought = sessionResults.filter((r) => r.action === "buy").length;
+    const kept = sessionResults.filter((r) => r.action === "keep").length;
+    const removed = sessionResults.filter((r) => r.action === "remove").length;
 
     return (
       <div className="absolute inset-0 z-10 overflow-y-auto bg-neutral-50/98 backdrop-blur-sm">
         <SummaryScreen
-          originalCount={originalCount}
+          originalCount={sessionOriginal}
           bought={bought}
           kept={kept}
           removed={removed}
@@ -112,10 +152,10 @@ export default function WishlistTab() {
             Your wishlist
           </h1>
           <p className="mt-1 text-sm text-neutral-500">
-            {items.length} items saved · Last reviewed: 3 months ago
+            {wishlistItems.length} items saved · Last reviewed: 3 months ago
           </p>
         </div>
-        {items.length > 0 && (
+        {wishlistItems.length > 0 && (
           <button
             onClick={handleBeginReset}
             className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-coral-500 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-coral-200 transition hover:bg-coral-600 sm:mt-0"
@@ -126,16 +166,29 @@ export default function WishlistTab() {
         )}
       </div>
 
-      <p className="mt-3 max-w-2xl rounded-xl bg-coral-50 px-4 py-2.5 text-xs text-coral-700 sm:text-sm">
-        Dozens of items, no signal on which ones you&apos;ll actually buy.
-        That&apos;s the problem Wishlist Reset solves next.
-      </p>
+      {wishlistItems.length > 0 ? (
+        <>
+          <p className="mt-3 max-w-2xl rounded-xl bg-coral-50 px-4 py-2.5 text-xs text-coral-700 sm:text-sm">
+            Dozens of items, no signal on which ones you&apos;ll actually buy.
+            That&apos;s the problem Wishlist Reset solves next.
+          </p>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 pb-6 sm:grid-cols-3 md:grid-cols-4">
-        {items.map((product) => (
-          <Card key={product.id} product={product} />
-        ))}
-      </div>
+          <div className="mt-6 grid grid-cols-2 gap-3 pb-6 sm:grid-cols-3 md:grid-cols-4">
+            {wishlistItems.map((product) => (
+              <Card
+                key={product.id}
+                product={product}
+                inWishlist={wishlistIds.includes(product.id)}
+                onToggleWishlist={toggleWishlist}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="mt-8 text-sm text-neutral-500">
+          Your wishlist is empty. Heart something on Home to save it here.
+        </p>
+      )}
     </div>
   );
 }
