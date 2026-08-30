@@ -10,7 +10,7 @@ import Card from "@/components/Card";
  * transition, not an in-place filter on Home.
  */
 export default function CategoryTab({ category, onBack }) {
-  const { catalog, wishlistIds, toggleWishlist, addToCart } = useWishlist();
+  const { catalog, wishlistIds, heartTap, addToCart } = useWishlist();
 
   const items = catalog.filter((p) => category.categories.includes(p.category));
 
@@ -40,7 +40,7 @@ export default function CategoryTab({ category, onBack }) {
               key={product.id}
               product={product}
               inWishlist={wishlistIds.includes(product.id)}
-              onToggleWishlist={toggleWishlist}
+              onToggleWishlist={heartTap}
               onAddToCart={addToCart}
             />
           ))}

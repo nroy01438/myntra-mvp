@@ -3,6 +3,7 @@
 import { useWishlist } from "@/lib/WishlistContext";
 import DisclaimerBadge from "@/components/DisclaimerBadge";
 import TopNav from "@/components/TopNav";
+import ReasonCaptureToast from "@/components/ReasonCaptureToast";
 
 /**
  * The persistent app shell: disclaimer banner and top nav never unmount or
@@ -42,6 +43,7 @@ export default function AppShell({
         cartCount={cartCount}
       />
       <div className="relative flex-1 overflow-y-auto">{children}</div>
+      <ReasonCaptureToast />
     </div>
   );
 }

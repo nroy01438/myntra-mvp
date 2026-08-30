@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useWishlist } from "@/lib/WishlistContext";
 import { logEvent } from "@/lib/analytics";
 import Card from "@/components/Card";
-import SwipeSession from "@/components/SwipeSession";
+import SwipeStack from "@/components/SwipeStack";
 import SummaryScreen from "@/components/SummaryScreen";
 
 /**
@@ -34,6 +34,7 @@ export default function WishlistTab({ onClose }) {
     wishlistItems,
     wishlistIds,
     toggleWishlist,
+    savedReasons,
     addToWishlist,
     removeFromWishlist,
     addToCart,
@@ -45,6 +46,11 @@ export default function WishlistTab({ onClose }) {
     clearGridRequest,
   } = useWishlist();
 
+  // In a real deployment, a reset session would be triggered contextually
+  // (a sale starting on a saved item, an item going low-stock, the wishlist
+  // crossing a size threshold) rather than opened manually via a button —
+  // a known simplification for this MVP, where "Begin Reset" is the only
+  // entry point.
   function handleBeginReset() {
     setSessionQueue(wishlistItems);
     setSessionOriginal(wishlistItems.length);
@@ -123,6 +129,7 @@ export default function WishlistTab({ onClose }) {
         <SessionView
           sessionQueue={sessionQueue}
           sessionOriginal={sessionOriginal}
+          savedReasons={savedReasons}
           onComplete={handleItemComplete}
           onClose={onClose}
           canUndo={Boolean(lastCompleted)}
@@ -143,7 +150,7 @@ export default function WishlistTab({ onClose }) {
         <GridView
           wishlistItems={wishlistItems}
           wishlistIds={wishlistIds}
-          toggleWishlist={toggleWishlist}
+          onUnheart={(product) => toggleWishlist(product.id)}
           onBeginReset={handleBeginReset}
           onClose={onClose}
         />
@@ -185,7 +192,7 @@ function milestoneMessage(currentIndex, total) {
   return null;
 }
 
-function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, onClose }) {
+function GridView({ wishlistItems, wishlistIds, onUnheart, onBeginReset, onClose }) {
   return (
     <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6">
       <div className="flex items-start justify-between gap-3">
@@ -223,7 +230,7 @@ function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, on
                 key={product.id}
                 product={product}
                 inWishlist={wishlistIds.includes(product.id)}
-                onToggleWishlist={toggleWishlist}
+                onToggleWishlist={onUnheart}
               />
             ))}
           </div>
@@ -237,9 +244,16 @@ function GridView({ wishlistItems, wishlistIds, toggleWishlist, onBeginReset, on
   );
 }
 
-function SessionView({ sessionQueue, sessionOriginal, onComplete, onClose, canUndo, onUndo }) {
+function SessionView({
+  sessionQueue,
+  sessionOriginal,
+  savedReasons,
+  onComplete,
+  onClose,
+  canUndo,
+  onUndo,
+}) {
   const currentIndex = sessionOriginal - sessionQueue.length;
-  const currentItem = sessionQueue[0];
   const milestone = milestoneMessage(currentIndex, sessionOriginal);
 
   return (
@@ -262,8 +276,8 @@ function SessionView({ sessionQueue, sessionOriginal, onComplete, onClose, canUn
         {canUndo && <UndoLink onUndo={onUndo} />}
       </div>
 
-      {currentItem ? (
-        <SwipeSession key={currentItem.id} product={currentItem} onComplete={onComplete} />
+      {sessionQueue.length > 0 ? (
+        <SwipeStack queue={sessionQueue} savedReasons={savedReasons} onCommit={onComplete} />
       ) : (
         <p className="pt-16 text-sm text-neutral-500">All done...</p>
       )}

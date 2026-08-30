@@ -24,7 +24,7 @@ const CATEGORY_TILES = [
  * LLM reasoning in a reset session as the original 18 did.
  */
 export default function HomeTab({ onCategoryClick }) {
-  const { catalog, wishlistIds, toggleWishlist, addToCart } = useWishlist();
+  const { catalog, wishlistIds, heartTap, addToCart } = useWishlist();
 
   return (
     <div className="mx-auto max-w-6xl pb-10 pt-4">
@@ -63,7 +63,7 @@ export default function HomeTab({ onCategoryClick }) {
               key={product.id}
               product={product}
               inWishlist={wishlistIds.includes(product.id)}
-              onToggleWishlist={toggleWishlist}
+              onToggleWishlist={heartTap}
               onAddToCart={addToCart}
             />
           ))}

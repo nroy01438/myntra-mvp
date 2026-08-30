@@ -19,7 +19,7 @@ export default function Card({ product, inWishlist, onToggleWishlist, onAddToCar
             aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
             onClick={(e) => {
               e.stopPropagation();
-              onToggleWishlist(product.id);
+              onToggleWishlist(product);
             }}
             className="absolute right-2 top-2 rounded-full bg-white/90 p-1.5 shadow-sm backdrop-blur transition active:scale-90"
           >

@@ -14,6 +14,18 @@ with a simulated crowd-behavior signal to produce one clear verdict per
 item — then walks the user through a fast guided session to actually clear
 their wishlist down to what matters, without any monetary incentive.
 
+Two design decisions shape when and how that happens:
+
+- **Intent is captured at save time, not reset time.** Asking "why did you
+  save this?" during a reset session doesn't work — by then people have
+  forgotten. So the question is asked once, right when you heart an item
+  (see "Save-time intent capture" below), and it's entirely optional.
+- **The reset session itself is a pure reflexive swipe**, not a multi-step
+  decision. Every card's verdict, crowd-signal line, and optional reason
+  chip are fully pre-computed before the card ever appears — there's
+  nothing to pick mid-session, only a swipe (or an equivalent button) to
+  act on what's already been decided.
+
 ## How it works
 
 There's a single route (`/`), but `app/page.js` runs its own lightweight
@@ -34,15 +46,30 @@ a static `catalog` (all 18 products, each with real LLM-derived
 currently saved — seeded with 5 (`DEFAULT_WISHLIST_IDS`, deliberately
 picked so all four verdict types are reachable depending on the reason you
 pick), not the full catalog, but a normal add/remove set from then on),
-and a `cart`. Because every catalog product already carries real
+a `savedReasons` map (productId → reason, captured at save time — see
+below), and a `cart`. Because every catalog product already carries real
 crowdStats, anything added to the wishlist from Home runs through the
 **exact same** deterministic verdict matrix and LLM reasoning as the
 original 5 — there's no special-casing for "new" vs. "seed" products.
 
+### Save-time intent capture
+
+Tapping the heart on any product card (Home, Category, or the Wishlist
+grid) does two things: it adds the item to the wishlist immediately, and —
+only when adding, never when un-hearting — it surfaces a small, non-blocking
+toast at the bottom of the screen: **"Saved! Why? ❤️ Love it · 📅 For an
+event · 🏷️ Waiting for a deal."** Tapping a chip records that reason
+against the item (`chooseReason` in context); ignoring it just auto-dismisses
+after 4 seconds. Either way the heart action itself was already instant —
+the toast never blocks it. An item saved without a chosen reason (dismissed,
+ignored, or seeded before this feature existed) is a **cold-start** item:
+its reason is `null`, never guessed or backfilled later.
+
 - **Home** (`components/HomeTab.js`) — the landing screen: a promo banner,
   a "shop by category" tile grid, then the full catalog grid. Heart a
-  product to add/remove it from the wishlist; "Add to Cart" adds it
-  directly, skipping the wishlist entirely (a normal e-commerce shortcut).
+  product to add/remove it from the wishlist (triggering the capture toast
+  above on add); "Add to Cart" adds it directly, skipping the wishlist
+  entirely (a normal e-commerce shortcut).
 - **Category** (`components/CategoryTab.js`) — a real listing screen for
   one category, reached by clicking a Home tile or a top-nav category link
   (Men/Women/GenZ — see `lib/categoryNav.js`, mapped to this demo's actual
@@ -65,28 +92,40 @@ original 5 — there's no special-casing for "new" vs. "seed" products.
      problem before the tool solves it), with the "Begin Reset" button
      right there. Each card's heart also lets you unwishlist directly,
      without a full reset session.
-  2. **Reset session** — "Begin Reset" morphs the grid in place into a
-     one-at-a-time session (an overlay bounded to the content area only —
-     the shell doesn't move). Tap why you saved it (Love it / For an event /
-     Just browsing / Waiting for a deal — or press 1-4 on a keyboard). The
-     deterministic rule matrix (`/lib/verdictMatrix.js`, pure function, no
-     LLM involved in the decision) combines that reason with the item's
-     crowd-behavior stats into one verdict: **buy / keep / remove /
-     disagreement**. An LLM call (`/app/api/reasoning`) then writes a short
-     explanation of *that* verdict using the item's real numbers — each
-     verdict gets its own voice (`buy` is written to build genuine desire,
-     not recite a stat; `keep`/`remove` are reassuring/guilt-free; the
-     prompt explicitly varies each one's opening so cards don't all read the
-     same), and disagreement cases get a longer explanation referencing
-     actual review snippets. You act with Buy Now / Keep / Remove buttons
-     (or R/K/B, or the arrow keys), or swipe (left = remove, right = buy —
-     a two-direction horizontal swipe, with a "Remove"/"Buy" tint that
-     follows your drag) — all equally valid. **Buy Now** adds the item to
-     the cart and removes it from the wishlist; **Remove** just removes it;
-     **Keep** leaves it in the wishlist for next time. **↩ Undo last** is
-     always available (session and summary alike) if you change your mind
-     about the item you just acted on, and the session calls out momentum
-     at the halfway point and on the last item.
+  2. **Reset session** (`components/SwipeStack.js`) — "Begin Reset" morphs
+     the grid in place into a Tinder-style swipe stack (an overlay bounded
+     to the content area only — the shell doesn't move). There is no
+     in-session decision step: every card's verdict, one-line crowd signal,
+     and reason chip (if one was captured at save time) are fully
+     pre-computed before the card appears, using the deterministic rule
+     matrix (`/lib/verdictMatrix.js`, pure function, no LLM involved in the
+     decision) combined with the item's crowd-behavior stats. Cold-start
+     items (no captured reason) compute their verdict from crowd signal +
+     stock level + price-drop frequency alone, via the matrix's
+     "just browsing" branch — the one branch that already depends only on
+     churn rate, not a reason — rather than guessing one. The card itself
+     is glanceable in under a second: a colored border/glow for the verdict
+     (green = worth buying, amber = your call, red = probably drop),
+     product image/name/price, and the crowd-signal line. Swipe right to
+     **Add to Cart**, left to **Remove**, down (or tap the "Keep for later"
+     button) to keep it — full drag physics (rotation, live color-coded
+     decision stamps, velocity-aware commit, spring-back on an
+     under-threshold release, a fly-off exit) via Framer Motion, with the
+     next 1-2 cards peeking behind the top one. Buttons trigger the
+     identical fly-off animation, so gesture and tap are equally valid.
+     Tapping a card (without dragging) optionally expands it to show the
+     fuller LLM-written reasoning (`/app/api/reasoning` — fetched proactively
+     as soon as a card becomes top-of-stack, each verdict still gets its own
+     voice: `buy` builds genuine desire, `keep`/`remove` stay
+     reassuring/guilt-free, `disagreement` cases reference real review
+     snippets) plus review snippets for disagreement cases — entirely
+     optional, never required to act. **↩ Undo last** is always available
+     (session and summary alike), and the session calls out momentum at the
+     halfway point and on the last item. In a real deployment a reset
+     session would be triggered contextually (a sale starting, an item
+     going low-stock, the wishlist crossing a size threshold) rather than
+     opened manually — a known simplification for this MVP, noted in
+     `components/WishlistTab.js`.
   3. **Summary** — once the session's queue is empty, the same screen
      morphs again into the summary: tallies bought/kept/removed from *that*
      session and a genuine "your wishlist just got X% more useful" stat
