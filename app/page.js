@@ -62,7 +62,7 @@ export default function AppRoot() {
       onQuickReset={goQuickReset}
       currentView={view}
     >
-      {view === "home" && <HomeTab onCategoryClick={goCategory} onProfileClick={goProfile} />}
+      {view === "home" && <HomeTab onCategoryClick={goCategory} />}
       {view === "category" && <CategoryTab category={activeCategory} onBack={goHome} />}
       {view === "wishlist" && <WishlistTab onClose={goHome} />}
       {view === "cart" && <CartTab />}
