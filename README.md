@@ -263,10 +263,19 @@ into case-study metrics without changing the event shape:
   points/rank, which persists to `localStorage` (see "Gamification" above)
   — per-browser, not per-account, since there's still no login.
 - Product images (`components/ProductThumb.js`) are a category-tinted
-  gradient block with a clothing-type emoji, sized modestly rather than
-  filling the frame — not real product photography, per the IP boundary
-  spec. (An earlier iteration tried a keyword-tagged stock-photo API;
-  the results weren't reliably relevant, so this reverted to emoji.)
+  gradient block with a hand-authored flat SVG garment illustration
+  (`components/ClothingIllustrations.js`), filling most of the frame —
+  not real product photography, per the IP boundary spec. (An earlier
+  iteration tried a keyword-tagged stock-photo API; the results weren't
+  reliably relevant, so this moved first to a plain emoji glyph, then to
+  these illustrations — there's no image-generation tool available in
+  this environment either, so hand-authored SVG is the closest achievable
+  stand-in for "illustration, not photography.")
+- Listing prices show a strikethrough MRP and a discount % alongside the
+  real price (`lib/pricing.js`), matching typical e-commerce listing UI —
+  `products.json` only carries one real `price` per item, so the MRP and
+  discount are derived deterministically from the product id, not real
+  data.
 - The Assistant Google Font stands in for Myntra's actual (licensed)
   webfont — visually close, not the real typeface.
 - Analytics events are console-logged / in-memory only, not persisted.

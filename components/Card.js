@@ -2,6 +2,7 @@
 
 import { HeartIcon, CartIcon } from "@/components/icons";
 import ProductThumb from "@/components/ProductThumb";
+import { getDiscountPct, getMrp } from "@/lib/pricing";
 
 /**
  * Product card used on both the Home (browse) and Wishlist (grid) screens.
@@ -17,6 +18,9 @@ export default function Card({
   onAddToCart,
   reasonLabel,
 }) {
+  const discountPct = getDiscountPct(product.id);
+  const mrp = getMrp(product.price, product.id);
+
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-100 bg-white shadow-sm transition hover:shadow-md">
       <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden bg-neutral-100">
@@ -56,9 +60,15 @@ export default function Card({
         <h3 className="mt-0.5 line-clamp-2 text-sm font-medium leading-snug text-neutral-800">
           {product.name}
         </h3>
-        <p className="mt-1 text-sm font-bold text-neutral-900">
-          ₹{product.price.toLocaleString("en-IN")}
-        </p>
+        <div className="mt-1 flex flex-wrap items-baseline gap-1.5">
+          <span className="text-sm font-bold text-neutral-900">
+            ₹{product.price.toLocaleString("en-IN")}
+          </span>
+          <span className="text-xs text-neutral-400 line-through">
+            ₹{mrp.toLocaleString("en-IN")}
+          </span>
+          <span className="text-xs font-semibold text-orange-600">{discountPct}% OFF</span>
+        </div>
 
         <div className="flex-1" />
 

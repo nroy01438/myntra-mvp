@@ -41,10 +41,13 @@ export default function HomeTab({ onCategoryClick }) {
               }
               className="overflow-hidden rounded-xl border border-neutral-100 bg-white text-left shadow-sm transition hover:shadow-md"
             >
-              <ProductThumb category={tile.key} size="lg" className="aspect-square w-full" />
+              <ProductThumb category={tile.key} size="lg" className="aspect-[3/4] w-full" />
               <div className="p-2.5">
                 <p className="text-sm font-bold text-neutral-800">{tile.label}</p>
                 <p className="text-xs font-semibold text-coral-500">{tile.off}</p>
+                <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
+                  Shop Now
+                </p>
               </div>
             </button>
           ))}
