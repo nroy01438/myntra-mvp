@@ -9,6 +9,12 @@ const DRAG_COMMIT_DISTANCE = 120;
 const VELOCITY_COMMIT = 500;
 const VERTICAL_COMMIT_DISTANCE = 100;
 
+// Each verdict gets its own label AND color — "keep" and "disagreement" used
+// to share one ambiguous "Your call" amber badge, which read as unexplained.
+// They're now visually distinct (amber vs. violet), and every card also
+// shows the matrix's own plain-English headline (e.g. "Let it go", "No
+// rush, but worth another look") right under the product name, so the
+// reasoning is visible up front instead of only inside the expand panel.
 const VERDICT_THEME = {
   buy: {
     label: "Worth buying",
@@ -18,7 +24,7 @@ const VERDICT_THEME = {
     text: "text-emerald-700",
   },
   keep: {
-    label: "Your call",
+    label: "No rush",
     border: "border-amber-300",
     glow: "shadow-amber-200/70",
     dot: "bg-amber-500",
@@ -32,11 +38,11 @@ const VERDICT_THEME = {
     text: "text-rose-700",
   },
   disagreement: {
-    label: "Your call",
-    border: "border-amber-300",
-    glow: "shadow-amber-200/70",
-    dot: "bg-amber-500",
-    text: "text-amber-700",
+    label: "Second look",
+    border: "border-violet-300",
+    glow: "shadow-violet-200/70",
+    dot: "bg-violet-500",
+    text: "text-violet-700",
   },
 };
 
@@ -54,6 +60,21 @@ function crowdSignalLine(product) {
   if (churnRate > 60) return `${churnRate}% of shoppers who saved this let it go`;
   if (priceDropFrequency === "frequent") return "Price drops often on this one — no rush";
   return "Steady interest from other shoppers, nothing urgent";
+}
+
+const STOCK_LABEL = { low: "Low stock", medium: "In stock", high: "Well stocked" };
+const PRICE_DROP_LABEL = { frequent: "Drops often", occasional: "Drops sometimes", rare: "Rarely drops" };
+
+// Compact supporting stats shown on every card, beneath the always-visible
+// headline — the same numbers the verdict was computed from, so a glance
+// confirms *why*, not just *what*, without needing to tap-to-expand.
+function statChips(product) {
+  const { buyThroughRate, priceDropFrequency } = product.crowdStats;
+  return [
+    { icon: "🛍️", text: `${buyThroughRate}% buy-through` },
+    { icon: "💸", text: PRICE_DROP_LABEL[priceDropFrequency] ?? priceDropFrequency },
+    { icon: "📦", text: STOCK_LABEL[product.stockLevel] ?? product.stockLevel },
+  ];
 }
 
 // Cold-start items — saved without picking a reason at save time — skip the
@@ -85,7 +106,7 @@ export default function SwipeStack({ queue, savedReasons, onCommit }) {
   if (!top) return null;
 
   return (
-    <div className="relative mx-auto h-[30rem] w-full max-w-sm md:h-[26rem] md:max-w-xl">
+    <div className="relative mx-auto h-[35rem] w-full max-w-sm md:h-[31rem] md:max-w-xl">
       {peek2 && <PeekCard product={peek2} depth={2} />}
       {peek1 && <PeekCard product={peek1} depth={1} />}
       <TopCard
@@ -319,11 +340,26 @@ function TopCard({ product, reason, onCommit }) {
             <p className="mt-0.5 text-sm text-neutral-500">
               ₹{product.price.toLocaleString("en-IN")}
             </p>
-            <p className="mt-2 text-sm font-medium text-neutral-700">{crowdSignalLine(product)}</p>
+
+            {/* The matrix's own plain-English headline, always visible —
+                this is the "why" behind the badge above, not gated behind
+                tap-to-expand. */}
+            <p className={`mt-1.5 text-sm font-bold ${theme.text}`}>{verdict.headline}</p>
+            <p className="mt-1 text-xs text-neutral-500">{crowdSignalLine(product)}</p>
+
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {statChips(product).map((chip) => (
+                <span
+                  key={chip.text}
+                  className="rounded-full bg-neutral-100 px-2 py-1 text-[10px] font-semibold text-neutral-600"
+                >
+                  {chip.icon} {chip.text}
+                </span>
+              ))}
+            </div>
 
             {expanded && (
               <div className="mt-3 space-y-1.5 rounded-xl bg-neutral-50 p-3">
-                <p className="text-xs font-bold text-neutral-800">{verdict.headline}</p>
                 {isLoadingReasoning ? (
                   <div className="space-y-1.5">
                     <div className="h-3 w-full animate-pulse rounded bg-neutral-200" />

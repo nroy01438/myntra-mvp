@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useWishlist } from "@/lib/WishlistContext";
 import { logEvent } from "@/lib/analytics";
+import { REASON_LABELS } from "@/lib/verdictMatrix";
 import Card from "@/components/Card";
 import SwipeStack from "@/components/SwipeStack";
 import SummaryScreen from "@/components/SummaryScreen";
@@ -150,6 +151,7 @@ export default function WishlistTab({ onClose }) {
         <GridView
           wishlistItems={wishlistItems}
           wishlistIds={wishlistIds}
+          savedReasons={savedReasons}
           onUnheart={(product) => toggleWishlist(product.id)}
           onBeginReset={handleBeginReset}
           onClose={onClose}
@@ -192,7 +194,7 @@ function milestoneMessage(currentIndex, total) {
   return null;
 }
 
-function GridView({ wishlistItems, wishlistIds, onUnheart, onBeginReset, onClose }) {
+function GridView({ wishlistItems, wishlistIds, savedReasons, onUnheart, onBeginReset, onClose }) {
   return (
     <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6">
       <div className="flex items-start justify-between gap-3">
@@ -224,13 +226,16 @@ function GridView({ wishlistItems, wishlistIds, onUnheart, onBeginReset, onClose
             into a yes, a no, or a not-yet — in under a minute.
           </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-3 pb-6 sm:grid-cols-3 md:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-4 pb-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {wishlistItems.map((product) => (
               <Card
                 key={product.id}
                 product={product}
                 inWishlist={wishlistIds.includes(product.id)}
                 onToggleWishlist={onUnheart}
+                reasonLabel={
+                  savedReasons[product.id] ? REASON_LABELS[savedReasons[product.id]] : null
+                }
               />
             ))}
           </div>
