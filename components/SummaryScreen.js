@@ -22,12 +22,12 @@ function Donut({ bought, kept, removed }) {
 
   return (
     <div
-      className="relative mx-auto h-40 w-40 rounded-full"
+      className="relative mx-auto h-32 w-32 shrink-0 rounded-full"
       style={{ background: gradient }}
     >
       <div className="absolute inset-3 flex flex-col items-center justify-center rounded-full bg-white">
-        <span className="text-2xl font-extrabold text-neutral-900">{total}</span>
-        <span className="text-[11px] text-neutral-400">processed</span>
+        <span className="text-xl font-extrabold text-neutral-900">{total}</span>
+        <span className="text-[10px] text-neutral-400">reviewed</span>
       </div>
     </div>
   );
@@ -35,8 +35,8 @@ function Donut({ bought, kept, removed }) {
 
 function Legend({ bought, kept, removed }) {
   const rows = [
-    { label: "Bought", value: bought, color: SEGMENT_COLORS.bought },
-    { label: "Kept", value: kept, color: SEGMENT_COLORS.kept },
+    { label: "Added to Bag", value: bought, color: SEGMENT_COLORS.bought },
+    { label: "Kept for later", value: kept, color: SEGMENT_COLORS.kept },
     { label: "Removed", value: removed, color: SEGMENT_COLORS.removed },
   ];
   return (
@@ -48,7 +48,7 @@ function Legend({ bought, kept, removed }) {
             style={{ backgroundColor: row.color }}
             aria-hidden
           />
-          <span className="w-16 font-medium text-neutral-600">{row.label}</span>
+          <span className="w-28 text-left font-medium text-neutral-600">{row.label}</span>
           <span className="font-bold text-neutral-900">{row.value}</span>
         </div>
       ))}
@@ -56,6 +56,11 @@ function Legend({ bought, kept, removed }) {
   );
 }
 
+// The one number that actually matters to the person doing the reset is
+// how much closer their bag just got to checkout — not an internal
+// funnel breakdown of what happened to every item. That number leads;
+// everything else (the per-item tallies, the donut) is supporting detail
+// underneath it, not the headline.
 export default function SummaryScreen({ originalCount, bought, kept, removed }) {
   const usefulnessPct = originalCount > 0 ? Math.round(((bought + kept) / originalCount) * 100) : 0;
 
@@ -64,13 +69,23 @@ export default function SummaryScreen({ originalCount, bought, kept, removed }) 
       <span className="mb-3 inline-block rounded-full bg-coral-50 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-coral-600">
         🎉 Reset complete
       </span>
-      <h1 className="text-2xl font-extrabold text-neutral-900 sm:text-3xl">
-        Your wishlist just got{" "}
-        <span className="text-coral-500">{usefulnessPct}% more useful</span>
-      </h1>
+
+      {bought > 0 ? (
+        <h1 className="text-3xl font-extrabold text-neutral-900 sm:text-4xl">
+          <span className="text-emerald-500">{bought}</span> item{bought !== 1 ? "s" : ""}{" "}
+          added to your Bag
+        </h1>
+      ) : (
+        <h1 className="text-2xl font-extrabold text-neutral-900 sm:text-3xl">
+          Your wishlist is looking sharper
+        </h1>
+      )}
+      <p className="mt-1 text-sm font-semibold text-coral-500">
+        {usefulnessPct}% more useful than when you started
+      </p>
       <p className="mt-2 text-sm text-neutral-500">
-        You started with {originalCount} items. {bought} bought, {removed}{" "}
-        removed, {kept} kept.
+        Of {originalCount} item{originalCount !== 1 ? "s" : ""} — {bought} added to cart,{" "}
+        {removed} removed, {kept} kept for later.
       </p>
 
       <div className="mt-8 flex flex-col items-center gap-6 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm sm:flex-row sm:justify-center sm:gap-10">
