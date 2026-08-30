@@ -1,0 +1,457 @@
+[
+  {
+    "id": "p01",
+    "name": "Coral Bloom Wrap Dress",
+    "category": "dresses",
+    "brand": "Zaraya",
+    "price": 1899,
+    "imageUrl": "https://picsum.photos/seed/p01/600/800",
+    "stockLevel": "low",
+    "sizes": [
+      { "size": "S", "inStock": true, "stockLevel": "low" },
+      { "size": "M", "inStock": true, "stockLevel": "low" },
+      { "size": "L", "inStock": false, "stockLevel": "out" }
+    ],
+    "reviews": [
+      "Fit was true to size and the fabric flows so well, got so many compliments at a wedding.",
+      "The color is even prettier in person, exactly as pictured.",
+      "Fabric feels premium for the price, not see-through at all.",
+      "Ordered my usual M and it fit perfectly, length was just right.",
+      "Wore this to a friend's sangeet, felt confident all night.",
+      "Stitching quality is great, no loose threads anywhere.",
+      "The wrap style is flattering on my body type, very happy.",
+      "Delivery was quick and the dress looked exactly like the photos.",
+      "Fabric is soft and breathable, perfect for summer events.",
+      "Best purchase this season, fits like it was tailored for me."
+    ]
+  },
+  {
+    "id": "p02",
+    "name": "Midnight Ember Bodycon Dress",
+    "category": "dresses",
+    "brand": "Zaraya",
+    "price": 1599,
+    "imageUrl": "https://picsum.photos/seed/p02/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "S", "inStock": true, "stockLevel": "high" },
+      { "size": "M", "inStock": true, "stockLevel": "high" },
+      { "size": "L", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Runs really small, had to return for a size up.",
+      "Fabric feels a bit cheap and thin for the price.",
+      "The stitching near the zipper came loose after one wash.",
+      "Color faded slightly after washing, disappointed.",
+      "Fit was okay but the length was shorter than expected.",
+      "Material clings in a way that isn't flattering.",
+      "Decent for a one-time party but wouldn't buy again.",
+      "Sizing chart is way off, order two sizes up.",
+      "Looked different from the pictures, more see-through.",
+      "It's fine but nothing special, exchanged it once already."
+    ]
+  },
+  {
+    "id": "p03",
+    "name": "Ivory Cotton Shirt Dress",
+    "category": "dresses",
+    "brand": "Northloom",
+    "price": 1299,
+    "imageUrl": "https://picsum.photos/seed/p03/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "S", "inStock": true, "stockLevel": "high" },
+      { "size": "M", "inStock": true, "stockLevel": "high" },
+      { "size": "L", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Comfortable everyday dress, fits as expected.",
+      "Some found it slightly loose, others said true to size.",
+      "Fabric is nice but the buttons feel a little flimsy.",
+      "Good for office wear, fit was fine for me.",
+      "A bit boxy on my frame but the fabric quality is good.",
+      "Runs large for some, true to size for others in my group order.",
+      "Comfortable cotton, breathes well in summer heat.",
+      "Liked the fabric but wish it had a defined waist.",
+      "Decent quality, fit varies a lot depending on body type.",
+      "Solid basic piece, fit was true to size for me."
+    ]
+  },
+  {
+    "id": "p04",
+    "name": "Rustwood Checked Shirt",
+    "category": "shirts",
+    "brand": "Northloom",
+    "price": 999,
+    "imageUrl": "https://picsum.photos/seed/p04/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "M", "inStock": true, "stockLevel": "high" },
+      { "size": "L", "inStock": true, "stockLevel": "high" },
+      { "size": "XL", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Perfect fit, fabric is soft and doesn't itch at all.",
+      "This is my third shirt from this brand, always fits great.",
+      "Color is rich and hasn't faded after multiple washes.",
+      "Great for casual Fridays, fits true to size.",
+      "Fabric quality is excellent, feels premium.",
+      "Sleeves length is perfect for my height.",
+      "Really happy with this purchase, fits exactly as expected.",
+      "Comfortable all day at work, breathable fabric.",
+      "Great value, fit and finish is on point.",
+      "Ordered L and it fit exactly as the size chart promised."
+    ]
+  },
+  {
+    "id": "p05",
+    "name": "Slate Grey Formal Shirt",
+    "category": "shirts",
+    "brand": "Kohlcraft",
+    "price": 899,
+    "imageUrl": "https://picsum.photos/seed/p05/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "M", "inStock": true, "stockLevel": "high" },
+      { "size": "L", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Collar feels stiff and uncomfortable after a few hours.",
+      "Fabric is thinner than expected, slightly see-through under light.",
+      "Runs tight across the shoulders even in the right size.",
+      "Buttons came loose within two weeks of use.",
+      "Fit was okay but the fabric pills after washing.",
+      "Not bad for the price but wouldn't call it premium.",
+      "Sleeves were too long for my arm length.",
+      "Color looked more blue than grey in person.",
+      "Decent for occasional wear, not durable for daily use.",
+      "Fit is inconsistent, had to iron constantly to look neat."
+    ]
+  },
+  {
+    "id": "p06",
+    "name": "Classic White Oxford Shirt",
+    "category": "shirts",
+    "brand": "Kohlcraft",
+    "price": 1099,
+    "imageUrl": "https://picsum.photos/seed/p06/600/800",
+    "stockLevel": "low",
+    "sizes": [
+      { "size": "M", "inStock": true, "stockLevel": "low" },
+      { "size": "L", "inStock": false, "stockLevel": "out" }
+    ],
+    "reviews": [
+      "Crisp white fabric, holds its shape wash after wash.",
+      "Perfect office shirt, fits true to size and looks sharp.",
+      "Best oxford shirt I've owned, fabric is substantial.",
+      "Fit is tailored without being tight, very comfortable.",
+      "Color stays bright white even after many washes.",
+      "Great stitching, no loose threads at all.",
+      "Exactly as described, fits like a proper formal shirt should.",
+      "Fabric doesn't wrinkle easily, great for travel.",
+      "Loved the fit around the collar and cuffs.",
+      "Worth every rupee, fits perfectly off the rack."
+    ]
+  },
+  {
+    "id": "p07",
+    "name": "Denali Straight Fit Jeans",
+    "category": "jeans",
+    "brand": "Kohlcraft",
+    "price": 1799,
+    "imageUrl": "https://picsum.photos/seed/p07/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "30", "inStock": true, "stockLevel": "high" },
+      { "size": "32", "inStock": true, "stockLevel": "high" },
+      { "size": "34", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Perfect straight fit, denim has just the right stretch.",
+      "Fits true to size, waist and length both spot on.",
+      "Best jeans I've bought online, no returns needed.",
+      "Denim quality is thick and durable, doesn't sag.",
+      "Fit is exactly like the store-bought version I own.",
+      "Color didn't fade after several washes, great denim.",
+      "Comfortable stretch, fits well at the waist and thighs.",
+      "True to size, ordered my regular 32 and it's perfect.",
+      "Great everyday jeans, fit is consistent across pairs.",
+      "Really happy, fits like a well-tailored pair."
+    ]
+  },
+  {
+    "id": "p08",
+    "name": "Vintage Wash Skinny Jeans",
+    "category": "jeans",
+    "brand": "Northloom",
+    "price": 1699,
+    "imageUrl": "https://picsum.photos/seed/p08/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "28", "inStock": true, "stockLevel": "high" },
+      { "size": "30", "inStock": true, "stockLevel": "high" },
+      { "size": "32", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Runs tight around the thighs, uncomfortable to sit in.",
+      "Fabric doesn't have much stretch despite being labeled skinny stretch.",
+      "Fit was off, waist too loose but thighs too tight.",
+      "Denim feels a bit stiff compared to other brands.",
+      "Sizing is confusing, ended up needing an exchange.",
+      "Color wash looked patchy compared to the photos.",
+      "Not the most comfortable for all-day wear.",
+      "Decent for occasional wear but fit is inconsistent.",
+      "Waistband loosens quickly after a few wears.",
+      "Fit varies a lot, would suggest ordering two sizes to compare."
+    ]
+  },
+  {
+    "id": "p09",
+    "name": "Everyday Comfort Jeans",
+    "category": "jeans",
+    "brand": "Basicwear Co.",
+    "price": 1299,
+    "imageUrl": "https://picsum.photos/seed/p09/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "30", "inStock": true, "stockLevel": "high" },
+      { "size": "32", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Solid everyday jeans, fit was fine for casual wear.",
+      "Some batches run a bit long, others true to length.",
+      "Comfortable enough but not the softest denim.",
+      "Fit is okay, nothing to complain about for the price.",
+      "A good basic pair, fits reasonably well.",
+      "Stretch is decent, fit is true to size mostly.",
+      "Works fine for daily wear, average overall quality.",
+      "Fit was acceptable, color is a bit lighter than shown.",
+      "Comfortable for the price point, no major issues.",
+      "Does the job as a basic jeans, fit is standard."
+    ]
+  },
+  {
+    "id": "p10",
+    "name": "Banarasi Silk Saree",
+    "category": "ethnic_wear",
+    "brand": "Paisley Threads",
+    "price": 3499,
+    "imageUrl": "https://picsum.photos/seed/p10/600/800",
+    "stockLevel": "low",
+    "sizes": [{ "size": "Free Size", "inStock": true, "stockLevel": "low" }],
+    "reviews": [
+      "Absolutely gorgeous weave, wore it for my sister's wedding and got endless compliments.",
+      "The zari work is stunning in person, better than the photos.",
+      "Fabric drapes beautifully, didn't need much pleating help.",
+      "Rich color and texture, feels like a genuine silk weave.",
+      "Perfect for festive occasions, fits any body type since it's a saree.",
+      "The pallu design is intricate and well finished.",
+      "Bought this for Diwali and it was the highlight of my outfit.",
+      "Excellent quality for the price, looks much more expensive.",
+      "Color exactly matched what was shown online.",
+      "Draping was easy and the fabric held its shape all evening."
+    ]
+  },
+  {
+    "id": "p11",
+    "name": "Anarkali Festive Suit Set",
+    "category": "ethnic_wear",
+    "brand": "Paisley Threads",
+    "price": 2799,
+    "imageUrl": "https://picsum.photos/seed/p11/600/800",
+    "stockLevel": "low",
+    "sizes": [
+      { "size": "S", "inStock": true, "stockLevel": "low" },
+      { "size": "M", "inStock": false, "stockLevel": "out" }
+    ],
+    "reviews": [
+      "Embroidery work is beautiful, fit was true to size for me.",
+      "Some found the flare too much, others loved the volume.",
+      "Fabric quality is good but the dupatta color ran slightly.",
+      "Fit around the bust was tight for a couple of reviewers.",
+      "Gorgeous for festive wear, fits well if you follow the size chart closely.",
+      "Loved the color but had to get minor alterations for length.",
+      "Mixed experience — some got a perfect fit, others needed tailoring.",
+      "Great outfit for Diwali, fits true to size in my case.",
+      "Beautiful design, fit was slightly loose around the waist.",
+      "Overall happy, though fit consistency seems to vary by batch."
+    ]
+  },
+  {
+    "id": "p12",
+    "name": "Chikankari Kurta Set",
+    "category": "ethnic_wear",
+    "brand": "Northloom",
+    "price": 1899,
+    "imageUrl": "https://picsum.photos/seed/p12/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "M", "inStock": true, "stockLevel": "high" },
+      { "size": "L", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Embroidery is delicate and well done, fits true to size.",
+      "Fabric is breathable, perfect for daytime festive events.",
+      "Loved wearing this for a puja at home, comfortable all day.",
+      "Color and embroidery exactly as shown in pictures.",
+      "Great fit around the shoulders and sleeves.",
+      "Fabric feels premium, chikankari work is authentic looking.",
+      "Perfect length, didn't need any alterations.",
+      "Comfortable and elegant, fits well for a relaxed silhouette.",
+      "Very happy with the craftsmanship and fit.",
+      "One of my favorite ethnic buys this year, fits perfectly."
+    ]
+  },
+  {
+    "id": "p13",
+    "name": "Mirror-Work Lehenga Choli",
+    "category": "ethnic_wear",
+    "brand": "Paisley Threads",
+    "price": 4299,
+    "imageUrl": "https://picsum.photos/seed/p13/600/800",
+    "stockLevel": "low",
+    "sizes": [
+      { "size": "S", "inStock": true, "stockLevel": "low" },
+      { "size": "M", "inStock": true, "stockLevel": "low" }
+    ],
+    "reviews": [
+      "Blouse ran small, had to get it altered before the wedding.",
+      "Mirror work is heavy and gorgeous but makes it quite heavy to wear all night.",
+      "Color was slightly duller in person than the listing photos.",
+      "Fit around the waist was inconsistent, needed a tailor.",
+      "Beautiful for photos but not the most comfortable fit.",
+      "Some loose threads on the mirror work upon arrival.",
+      "Great design but sizing definitely runs small for the blouse.",
+      "Mixed feelings — gorgeous piece, but fit needed work.",
+      "Skirt fit well, blouse needed alteration for a good fit.",
+      "Stunning for the price but plan for tailoring costs too."
+    ]
+  },
+  {
+    "id": "p14",
+    "name": "Canvas Low-Top Sneakers",
+    "category": "footwear",
+    "brand": "Basicwear Co.",
+    "price": 1499,
+    "imageUrl": "https://picsum.photos/seed/p14/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "7", "inStock": true, "stockLevel": "high" },
+      { "size": "8", "inStock": true, "stockLevel": "high" },
+      { "size": "9", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Super comfortable straight out of the box, no break-in needed.",
+      "True to size, fits like a well-known brand's sneakers.",
+      "Great for daily walks, cushioning is solid.",
+      "Fit was perfect for my usual size, no rubbing at all.",
+      "Durable sole, worn daily for two months and holding up.",
+      "Comfortable fit, breathable canvas material.",
+      "Exactly as pictured, true to size and comfortable.",
+      "Best budget sneakers I've bought, fit was spot on.",
+      "Very happy with the fit and finish for the price.",
+      "Fits true to size, sturdy stitching all around."
+    ]
+  },
+  {
+    "id": "p15",
+    "name": "Leather Formal Derby Shoes",
+    "category": "footwear",
+    "brand": "Kohlcraft",
+    "price": 2499,
+    "imageUrl": "https://picsum.photos/seed/p15/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "8", "inStock": true, "stockLevel": "high" },
+      { "size": "9", "inStock": true, "stockLevel": "high" },
+      { "size": "10", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Fit true to size, genuine leather feel and comfortable for office wear.",
+      "Great formal shoe, no blisters even after a full workday.",
+      "Sole is sturdy and the stitching looks premium.",
+      "Fits well, true to my usual size across brands.",
+      "Comfortable insole, doesn't feel stiff like other formal shoes.",
+      "Leather quality is impressive for the price point.",
+      "Perfect fit, wore them to a conference all day with no discomfort.",
+      "True to size and the shine holds up well.",
+      "Solid buy, fits and looks exactly as expected.",
+      "Comfortable from day one, no break-in period needed."
+    ]
+  },
+  {
+    "id": "p16",
+    "name": "Running Mesh Trainers",
+    "category": "footwear",
+    "brand": "Basicwear Co.",
+    "price": 1999,
+    "imageUrl": "https://picsum.photos/seed/p16/600/800",
+    "stockLevel": "low",
+    "sizes": [
+      { "size": "7", "inStock": true, "stockLevel": "low" },
+      { "size": "8", "inStock": false, "stockLevel": "out" }
+    ],
+    "reviews": [
+      "Runs narrow, my toes felt cramped even in the right size.",
+      "Sole started peeling after a month of regular running.",
+      "Cushioning is thinner than expected for a running shoe.",
+      "Fit was tight across the midfoot for a lot of buyers.",
+      "Mesh tears easily if you're active outdoors.",
+      "Sizing seems inconsistent between colorways.",
+      "Decent for light walks but not proper running use.",
+      "Fit is okay but not great for wider feet.",
+      "Grip on wet surfaces isn't great, felt unsafe once.",
+      "Average shoe, wouldn't repurchase for serious running."
+    ]
+  },
+  {
+    "id": "p17",
+    "name": "Suede Ankle Boots",
+    "category": "footwear",
+    "brand": "Northloom",
+    "price": 2299,
+    "imageUrl": "https://picsum.photos/seed/p17/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "6", "inStock": true, "stockLevel": "high" },
+      { "size": "7", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Some found the fit snug at the ankle, others said true to size.",
+      "Suede quality is nice but the zipper is a bit finicky.",
+      "Fit was fine for me but a friend with the same size found it tight.",
+      "Comfortable for short walks, not sure about all-day wear.",
+      "Color is beautiful, fit runs slightly narrow.",
+      "Good boots for the price, sizing is a little inconsistent.",
+      "I sized up and it worked out fine, true to size for others.",
+      "Suede feels premium, fit varies depending on foot width.",
+      "Happy with the purchase, though ankle fit is snug initially.",
+      "Decent quality, fit really depends on your foot shape."
+    ]
+  },
+  {
+    "id": "p18",
+    "name": "Linen Blend Casual Shirt",
+    "category": "shirts",
+    "brand": "Basicwear Co.",
+    "price": 949,
+    "imageUrl": "https://picsum.photos/seed/p18/600/800",
+    "stockLevel": "high",
+    "sizes": [
+      { "size": "M", "inStock": true, "stockLevel": "high" },
+      { "size": "L", "inStock": true, "stockLevel": "high" }
+    ],
+    "reviews": [
+      "Breathable and lightweight, great for hot weather.",
+      "Fit is relaxed and true to size, very comfortable.",
+      "Linen blend feels great, doesn't wrinkle as much as pure linen.",
+      "Perfect casual shirt, fits well without being baggy.",
+      "Fabric quality is good, holds color well after washing.",
+      "True to size, comfortable for all-day summer wear.",
+      "Great texture, fits exactly as the size chart suggested.",
+      "Really pleased with the fit and breathability.",
+      "One of my go-to casual shirts now, fits perfectly.",
+      "Comfortable and stylish, fit was spot on for my frame."
+    ]
+  }
+]
