@@ -12,8 +12,11 @@ const STATIC_MENU = ["Orders", "Addresses", "Payment Methods", "Help Center"];
  * reset-session action feeds into `lib/analytics.js`, ties the case study's
  * analytics hook to something visible in the UI. The agreement percentage
  * is reframed as a visible "decisiveness" tier/badge (lib/gamification.js)
- * rather than a buried number, and the reset streak — the one bit of state
- * that survives a refresh, via localStorage — is shown alongside it.
+ * rather than a buried number, and the cart-add streak — the one bit of
+ * state that survives a refresh, via localStorage — is shown alongside it.
+ * The streak tracks wishlist-to-cart conversions specifically, not reset
+ * sessions completed, so it can be nonzero even from a session that was
+ * only partly worked through.
  */
 export default function ProfileTab() {
   const { results, streakState } = useWishlist();
@@ -44,7 +47,7 @@ export default function ProfileTab() {
         </div>
       </div>
 
-      {(total > 0 || streakState.totalResets > 0) && (
+      {(total > 0 || streakState.totalCartAdds > 0) && (
         <div className="mt-6 rounded-2xl border border-neutral-100 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-coral-50 text-2xl">
@@ -86,8 +89,8 @@ export default function ProfileTab() {
         ) : (
           <>
             <p className="mt-2 text-sm text-neutral-500">
-              {total} item{total !== 1 ? "s" : ""} processed across {streakState.totalResets}{" "}
-              reset{streakState.totalResets !== 1 ? "s" : ""}
+              {total} item{total !== 1 ? "s" : ""} processed · {streakState.totalCartAdds}{" "}
+              added to cart
             </p>
             <div className="mt-3 space-y-1.5">
               {buckets

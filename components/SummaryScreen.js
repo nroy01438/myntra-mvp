@@ -59,9 +59,11 @@ function Legend({ bought, kept, removed }) {
 // The streak is the app's one hook for a return visit — it only means
 // anything once it's actually more than one day, so day one gets an
 // invitation to come back rather than a number that reads as "1" and
-// nothing else.
-function StreakBadge({ streak }) {
-  if (!streak || streak.currentStreak <= 0) return null;
+// nothing else. Only shown when this session actually added something to
+// cart (`bought > 0`) — the streak tracks conversions, so a session that
+// only kept/removed items didn't move it, and shouldn't claim it did.
+function StreakBadge({ streak, bought }) {
+  if (!streak || streak.currentStreak <= 0 || bought <= 0) return null;
 
   if (streak.currentStreak === 1) {
     return (
@@ -92,7 +94,7 @@ export default function SummaryScreen({ originalCount, bought, kept, removed, st
       <span className="mb-3 inline-block rounded-full bg-coral-50 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-coral-600">
         🎉 Reset complete
       </span>
-      <StreakBadge streak={streak} />
+      <StreakBadge streak={streak} bought={bought} />
 
       {bought > 0 ? (
         <h1 className="text-3xl font-extrabold text-neutral-900 sm:text-4xl">

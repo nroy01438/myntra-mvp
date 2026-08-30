@@ -45,7 +45,7 @@ export default function WishlistTab({ onClose }) {
     clearAutoResetRequest,
     gridRequested,
     clearGridRequest,
-    recordReset,
+    recordCartAdd,
     streakState,
   } = useWishlist();
 
@@ -94,6 +94,10 @@ export default function WishlistTab({ onClose }) {
     if (result.action === "buy") {
       addToCart(product);
       removeFromWishlist(product.id);
+      // The streak fires here — on the actual wishlist-to-cart conversion —
+      // not on finishing the session, so a couple of useful swipes count
+      // even if the rest of the list is abandoned unprocessed.
+      recordCartAdd();
     } else if (result.action === "remove") {
       removeFromWishlist(product.id);
     }
@@ -102,7 +106,6 @@ export default function WishlistTab({ onClose }) {
     const remaining = sessionQueue.slice(1);
     setSessionQueue(remaining);
     if (remaining.length === 0) {
-      recordReset();
       setLastCompleted({ product, result, cameFromSummary: true });
       setPhase("summary");
     } else {

@@ -147,14 +147,21 @@ its reason is `null`, never guessed or backfilled later.
 
 ### Gamification: streaks, not discounts
 
-Completing a reset session extends a day-based streak — shown as a small
-badge on the summary screen ("🔥 3-day streak") and, more fully, on the
-Profile tab alongside the decisiveness tier. Deliberately no monetary tie-in
-(no "swipe 5 items, unlock 10% off"): the premise of Wishlist Reset is a
-genuine declutter tool, not a discount funnel, so the reward for returning
-stays identity/progress-based. Completing a second reset on the same
-calendar day doesn't extend the streak (that would make it trivial to farm
-in one sitting) — only an actual return visit, a full day apart, does.
+Converting a wishlist item to cart (a "buy" swipe/tap, anywhere in a reset
+session) extends a day-based streak — shown as a small badge on the summary
+screen ("🔥 3-day streak") and, more fully, on the Profile tab alongside the
+decisiveness tier. The streak fires on the conversion itself, **not** on
+finishing the whole session: the app's actual goal is getting wishlist items
+into the cart, not making someone clear their entire list every day (most
+people never will), so a session with a couple of useful swipes that's then
+abandoned still counts — requiring full completion would reward grinding
+through the list instead of the thing that actually matters. Deliberately no
+monetary tie-in either (no "swipe 5 items, unlock 10% off"): the premise of
+Wishlist Reset is a genuine declutter tool, not a discount funnel, so the
+reward for returning stays identity/progress-based. A second (or fifth)
+cart-add on the same calendar day doesn't extend the streak further (that
+would make it trivial to farm in one sitting) — only an actual return visit,
+a full day apart, does.
 
 This streak is the **one exception** to the app's fully-stateless design: it
 persists to `localStorage` (`lib/gamification.js`), per-browser rather than
