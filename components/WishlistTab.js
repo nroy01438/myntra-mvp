@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useWishlist } from "@/lib/WishlistContext";
 import { logEvent } from "@/lib/analytics";
 import { REASON_LABELS } from "@/lib/verdictMatrix";
+import { getPointsForAction } from "@/lib/gamification";
 import Card from "@/components/Card";
 import SwipeStack from "@/components/SwipeStack";
 import SummaryScreen from "@/components/SummaryScreen";
@@ -45,8 +46,8 @@ export default function WishlistTab({ onClose }) {
     clearAutoResetRequest,
     gridRequested,
     clearGridRequest,
-    recordCartAdd,
-    streakState,
+    recordGamificationEvent,
+    gamificationState,
   } = useWishlist();
 
   // In a real deployment, a reset session would be triggered contextually
@@ -94,14 +95,17 @@ export default function WishlistTab({ onClose }) {
     if (result.action === "buy") {
       addToCart(product);
       removeFromWishlist(product.id);
-      // The streak fires here — on the actual wishlist-to-cart conversion —
-      // not on finishing the session, so a couple of useful swipes count
-      // even if the rest of the list is abandoned unprocessed.
-      recordCartAdd();
     } else if (result.action === "remove") {
       removeFromWishlist(product.id);
     }
     // "keep" leaves the product in the wishlist untouched.
+
+    // Points accrue on every resolved action, not just full session
+    // completion or only cart-adds — a couple of useful swipes on an
+    // otherwise-abandoned session still make permanent progress, and
+    // decluttering (remove) counts for something too, just less than a
+    // conversion (buy). See lib/gamification.js for the point weights.
+    recordGamificationEvent(result.action);
 
     const remaining = sessionQueue.slice(1);
     setSessionQueue(remaining);
@@ -146,7 +150,7 @@ export default function WishlistTab({ onClose }) {
         <SummaryView
           sessionOriginal={sessionOriginal}
           sessionResults={sessionResults}
-          streakState={streakState}
+          gamificationState={gamificationState}
           hasMoreToProcess={wishlistItems.length > 0}
           onDone={onClose}
           onStartAnother={() => (wishlistItems.length > 0 ? handleBeginReset() : setPhase("grid"))}
@@ -300,7 +304,7 @@ function SessionView({
 function SummaryView({
   sessionOriginal,
   sessionResults,
-  streakState,
+  gamificationState,
   hasMoreToProcess,
   onDone,
   onStartAnother,
@@ -311,6 +315,10 @@ function SummaryView({
   const bought = sessionResults.filter((r) => r.action === "buy").length;
   const kept = sessionResults.filter((r) => r.action === "keep").length;
   const removed = sessionResults.filter((r) => r.action === "remove").length;
+  const sessionPoints = sessionResults.reduce(
+    (sum, r) => sum + getPointsForAction(r.action),
+    0
+  );
 
   return (
     <div className="relative">
@@ -322,7 +330,8 @@ function SummaryView({
         bought={bought}
         kept={kept}
         removed={removed}
-        streak={streakState}
+        sessionPoints={sessionPoints}
+        gamification={gamificationState}
       />
       <div className="mx-auto mt-8 flex max-w-md flex-col items-center gap-3 px-4 pb-10">
         <div className="flex justify-center gap-3">

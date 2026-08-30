@@ -139,34 +139,39 @@ its reason is `null`, never guessed or backfilled later.
 - **Profile** (`components/ProfileTab.js`) — no login in this MVP, so the
   account section is static, but the stats card is real: it summarizes the
   lifetime `results` log (the same data `lib/analytics.js` logs per item)
-  — items processed, the bucket distribution by verdict, and a
-  **decisiveness tier** (`lib/gamification.js`) that reframes the verdict-
-  agreement percentage as a visible badge (🌱 New to Resets → 🙂 Casual
-  Sorter → ⚡ Decisive Shopper → 🏆 Wishlist Master) rather than a buried
-  number, plus the return **streak** described below.
+  — items processed, the bucket distribution by verdict, verdict-agreement
+  percentage — plus the points-based **rank badge** described below.
 
-### Gamification: streaks, not discounts
+### Gamification: lifetime points and a named rank, not a streak
 
-Converting a wishlist item to cart (a "buy" swipe/tap, anywhere in a reset
-session) extends a day-based streak — shown as a small badge on the summary
-screen ("🔥 3-day streak") and, more fully, on the Profile tab alongside the
-decisiveness tier. The streak fires on the conversion itself, **not** on
-finishing the whole session: the app's actual goal is getting wishlist items
-into the cart, not making someone clear their entire list every day (most
-people never will), so a session with a couple of useful swipes that's then
-abandoned still counts — requiring full completion would reward grinding
-through the list instead of the thing that actually matters. Deliberately no
-monetary tie-in either (no "swipe 5 items, unlock 10% off"): the premise of
-Wishlist Reset is a genuine declutter tool, not a discount funnel, so the
-reward for returning stays identity/progress-based. A second (or fifth)
-cart-add on the same calendar day doesn't extend the streak further (that
-would make it trivial to farm in one sitting) — only an actual return visit,
-a full day apart, does.
+Every action resolved in a reset session (buy/remove/keep) earns points
+(`lib/gamification.js`) — weighted toward the app's actual goal of getting
+wishlist items into the cart: a cart-add earns 10, a remove (real
+decluttering) earns 3, a keep (deferring the decision) earns 1. Points are
+lifetime and never expire or reset, and roll up into a named rank (🌱 New
+Sorter → 🙂 Casual Sorter → ⚡ Decisive Shopper → 🏆 Wishlist Master), shown
+as a prominent badge with a progress bar right on **Home**
+(`components/RankBadge.js`, tap it to jump to Profile), a small rank-icon
+indicator on the nav's Profile icon, and a "+N points" celebration on the
+reset summary screen.
 
-This streak is the **one exception** to the app's fully-stateless design: it
-persists to `localStorage` (`lib/gamification.js`), per-browser rather than
-per-account since there's no login. Everything else — wishlist membership,
-cart, session results — still resets on refresh, per the limitations below.
+This is deliberately **not a calendar streak**. A day-based streak assumes
+something close to daily engagement, which doesn't fit a wishlist tool at
+all — most people won't sort their wishlist every day, and shouldn't feel
+like they're failing at it if they don't. Points instead accumulate
+whenever the tool is actually used, however infrequently, and accrue on
+every resolved action rather than only on finishing an entire session — a
+couple of useful swipes on an otherwise-abandoned session still make real,
+permanent progress. Deliberately no monetary tie-in either (no "swipe 5
+items, unlock 10% off"): the premise of Wishlist Reset is a genuine
+declutter tool, not a discount funnel, so the reward for returning stays
+identity/progress-based.
+
+This points total is the **one exception** to the app's fully-stateless
+design: it persists to `localStorage` (`lib/gamification.js`), per-browser
+rather than per-account since there's no login. Everything else — wishlist
+membership, cart, session results — still resets on refresh, per the
+limitations below.
 
 ## Setup
 
@@ -253,9 +258,9 @@ into case-study metrics without changing the event shape:
 
 - No database, no auth — mostly stateless. Wishlist membership, cart
   contents, and session results all live only in React context in the
-  browser tab and are lost on refresh. The one exception is the reset
-  streak, which persists to `localStorage` (see "Gamification" above) —
-  per-browser, not per-account, since there's still no login.
+  browser tab and are lost on refresh. The one exception is the lifetime
+  points/rank, which persists to `localStorage` (see "Gamification" above)
+  — per-browser, not per-account, since there's still no login.
 - Product images (`components/ProductThumb.js`) are a category-tinted
   gradient block with a clothing-type emoji, sized modestly rather than
   filling the frame — not real product photography, per the IP boundary

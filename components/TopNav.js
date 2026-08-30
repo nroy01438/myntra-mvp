@@ -4,6 +4,7 @@ import { useWishlist } from "@/lib/WishlistContext";
 import { SearchIcon, ProfileIcon, CartIcon } from "@/components/icons";
 import WishlistHoverCard from "@/components/WishlistHoverCard";
 import { NAV_CATEGORIES } from "@/lib/categoryNav";
+import { getRank } from "@/lib/gamification";
 
 /**
  * Desktop-style top nav, matching a typical Indian fashion e-commerce
@@ -14,10 +15,9 @@ import { NAV_CATEGORIES } from "@/lib/categoryNav";
  * screen (the same handler Home's tiles use), Profile/Cart/Wishlist each
  * switch straight to their screen. The reset shortcut (see
  * WishlistHoverCard) floats directly beneath the Wishlist icon itself.
- * The Profile icon carries a small streak badge (reads `streakState`
- * straight from context, same pattern WishlistHoverCard already uses for
- * its own count) so the gamification hook is visible from every screen,
- * not just after opening Profile.
+ * The Profile icon carries a small rank-icon badge (once any points have
+ * been earned) as a subtle nod to it — the detailed points/rank card lives
+ * on Home and Profile, not crammed into this corner.
  */
 export default function TopNav({
   activeCategory,
@@ -30,7 +30,8 @@ export default function TopNav({
   showResetTrigger,
   cartCount,
 }) {
-  const { streakState } = useWishlist();
+  const { gamificationState } = useWishlist();
+  const rank = getRank(gamificationState.totalPoints);
 
   return (
     <div className="shrink-0 border-b border-neutral-200 bg-white">
@@ -57,9 +58,12 @@ export default function TopNav({
           >
             <span className="relative">
               <ProfileIcon className="h-5 w-5" />
-              {streakState.currentStreak > 0 && (
-                <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-[18px] items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-bold text-white">
-                  🔥{streakState.currentStreak}
+              {gamificationState.totalPoints > 0 && (
+                <span
+                  className="absolute -right-2 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] shadow-sm ring-1 ring-neutral-100"
+                  aria-hidden
+                >
+                  {rank.icon}
                 </span>
               )}
             </span>

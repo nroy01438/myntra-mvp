@@ -1,3 +1,5 @@
+import { getRank, getNextRank } from "@/lib/gamification";
+
 const SEGMENT_COLORS = {
   bought: "#10b981", // emerald-500
   kept: "#f59e0b", // amber-500
@@ -56,28 +58,29 @@ function Legend({ bought, kept, removed }) {
   );
 }
 
-// The streak is the app's one hook for a return visit — it only means
-// anything once it's actually more than one day, so day one gets an
-// invitation to come back rather than a number that reads as "1" and
-// nothing else. Only shown when this session actually added something to
-// cart (`bought > 0`) — the streak tracks conversions, so a session that
-// only kept/removed items didn't move it, and shouldn't claim it did.
-function StreakBadge({ streak, bought }) {
-  if (!streak || streak.currentStreak <= 0 || bought <= 0) return null;
+// Lifetime points, not a calendar streak — no "you visited every day" claim,
+// just permanent progress from whatever was actually done this session.
+// Only shown when this session earned points (every resolved action does,
+// so this is really "was anything processed at all").
+function RankProgress({ gamification, sessionPoints }) {
+  if (!gamification || sessionPoints <= 0) return null;
 
-  if (streak.currentStreak === 1) {
-    return (
-      <p className="mb-3 text-xs font-medium text-amber-600">
-        🔥 Streak started — come back tomorrow to keep it going
-      </p>
-    );
-  }
+  const rank = getRank(gamification.totalPoints);
+  const nextRank = getNextRank(gamification.totalPoints);
+  const rankedUp = getRank(gamification.totalPoints - sessionPoints).label !== rank.label;
 
-  const isNewBest = streak.currentStreak === streak.longestStreak;
   return (
-    <span className="mb-3 ml-2 inline-block rounded-full bg-amber-50 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-amber-600">
-      🔥 {streak.currentStreak}-day streak{isNewBest ? " — new best!" : ""}
-    </span>
+    <div className="mb-3 flex flex-col items-center gap-1.5">
+      <span className="inline-block rounded-full bg-amber-50 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-amber-600">
+        ✨ +{sessionPoints} points{rankedUp ? " — rank up!" : ""}
+      </span>
+      <p className="text-xs font-medium text-neutral-500">
+        {rank.icon} {rank.label}
+        {nextRank && (
+          <> · {nextRank.min - gamification.totalPoints} pts to {nextRank.label}</>
+        )}
+      </p>
+    </div>
   );
 }
 
@@ -86,7 +89,14 @@ function StreakBadge({ streak, bought }) {
 // funnel breakdown of what happened to every item. That number leads;
 // everything else (the per-item tallies, the donut) is supporting detail
 // underneath it, not the headline.
-export default function SummaryScreen({ originalCount, bought, kept, removed, streak }) {
+export default function SummaryScreen({
+  originalCount,
+  bought,
+  kept,
+  removed,
+  sessionPoints,
+  gamification,
+}) {
   const usefulnessPct = originalCount > 0 ? Math.round(((bought + kept) / originalCount) * 100) : 0;
 
   return (
@@ -94,7 +104,7 @@ export default function SummaryScreen({ originalCount, bought, kept, removed, st
       <span className="mb-3 inline-block rounded-full bg-coral-50 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-coral-600">
         🎉 Reset complete
       </span>
-      <StreakBadge streak={streak} bought={bought} />
+      <RankProgress gamification={gamification} sessionPoints={sessionPoints} />
 
       {bought > 0 ? (
         <h1 className="text-3xl font-extrabold text-neutral-900 sm:text-4xl">

@@ -4,6 +4,7 @@ import { useWishlist } from "@/lib/WishlistContext";
 import Card from "@/components/Card";
 import ProductThumb from "@/components/ProductThumb";
 import HeroBanner from "@/components/HeroBanner";
+import RankBadge from "@/components/RankBadge";
 
 const CATEGORY_TILES = [
   { key: "dresses", label: "Dresses", off: "40-70% OFF" },
@@ -23,12 +24,16 @@ const CATEGORY_TILES = [
  * added here runs through the exact same deterministic verdict matrix and
  * LLM reasoning in a reset session as the original 18 did.
  */
-export default function HomeTab({ onCategoryClick }) {
+export default function HomeTab({ onCategoryClick, onProfileClick }) {
   const { catalog, wishlistIds, heartTap, addToCart } = useWishlist();
 
   return (
     <div className="mx-auto max-w-6xl pb-10 pt-4">
       <HeroBanner />
+
+      <div className="mt-4 px-4 sm:px-6">
+        <RankBadge onClick={onProfileClick} />
+      </div>
 
       <div className="mt-6 px-4 sm:px-6">
         <h2 className="text-lg font-bold text-neutral-900">Shop by category</h2>
