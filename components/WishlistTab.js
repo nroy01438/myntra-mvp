@@ -45,6 +45,8 @@ export default function WishlistTab({ onClose }) {
     clearAutoResetRequest,
     gridRequested,
     clearGridRequest,
+    recordReset,
+    streakState,
   } = useWishlist();
 
   // In a real deployment, a reset session would be triggered contextually
@@ -100,6 +102,7 @@ export default function WishlistTab({ onClose }) {
     const remaining = sessionQueue.slice(1);
     setSessionQueue(remaining);
     if (remaining.length === 0) {
+      recordReset();
       setLastCompleted({ product, result, cameFromSummary: true });
       setPhase("summary");
     } else {
@@ -140,6 +143,7 @@ export default function WishlistTab({ onClose }) {
         <SummaryView
           sessionOriginal={sessionOriginal}
           sessionResults={sessionResults}
+          streakState={streakState}
           hasMoreToProcess={wishlistItems.length > 0}
           onDone={onClose}
           onStartAnother={() => (wishlistItems.length > 0 ? handleBeginReset() : setPhase("grid"))}
@@ -293,6 +297,7 @@ function SessionView({
 function SummaryView({
   sessionOriginal,
   sessionResults,
+  streakState,
   hasMoreToProcess,
   onDone,
   onStartAnother,
@@ -314,6 +319,7 @@ function SummaryView({
         bought={bought}
         kept={kept}
         removed={removed}
+        streak={streakState}
       />
       <div className="mx-auto mt-8 flex max-w-md flex-col items-center gap-3 px-4 pb-10">
         <div className="flex justify-center gap-3">
