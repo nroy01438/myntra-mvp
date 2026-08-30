@@ -149,11 +149,12 @@ Every action resolved in a reset session (buy/remove/keep) earns points
 wishlist items into the cart: a cart-add earns 10, a remove (real
 decluttering) earns 3, a keep (deferring the decision) earns 1. Points are
 lifetime and never expire or reset, and roll up into a named rank (🌱 New
-Sorter → 🙂 Casual Sorter → ⚡ Decisive Shopper → 🏆 Wishlist Master), shown
-as a prominent badge with a progress bar right on **Home**
-(`components/RankBadge.js`, tap it to jump to Profile), a small rank-icon
-indicator on the nav's Profile icon, and a "+N points" celebration on the
-reset summary screen.
+Sorter → 🙂 Casual Sorter → ⚡ Decisive Shopper → 🏆 Wishlist Master). It
+surfaces as a small rank-icon indicator on the nav's Profile icon that
+expands into a full rank/points/progress-bar popover on hover
+(`components/ProfileHoverCard.js`) — kept with the identity it names
+rather than competing for space on the Home feed — plus a "+N points"
+celebration on the reset summary screen.
 
 This is deliberately **not a calendar streak**. A day-based streak assumes
 something close to daily engagement, which doesn't fit a wishlist tool at
