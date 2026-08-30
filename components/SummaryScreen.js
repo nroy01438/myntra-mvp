@@ -56,12 +56,35 @@ function Legend({ bought, kept, removed }) {
   );
 }
 
+// The streak is the app's one hook for a return visit — it only means
+// anything once it's actually more than one day, so day one gets an
+// invitation to come back rather than a number that reads as "1" and
+// nothing else.
+function StreakBadge({ streak }) {
+  if (!streak || streak.currentStreak <= 0) return null;
+
+  if (streak.currentStreak === 1) {
+    return (
+      <p className="mb-3 text-xs font-medium text-amber-600">
+        🔥 Streak started — come back tomorrow to keep it going
+      </p>
+    );
+  }
+
+  const isNewBest = streak.currentStreak === streak.longestStreak;
+  return (
+    <span className="mb-3 ml-2 inline-block rounded-full bg-amber-50 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-amber-600">
+      🔥 {streak.currentStreak}-day streak{isNewBest ? " — new best!" : ""}
+    </span>
+  );
+}
+
 // The one number that actually matters to the person doing the reset is
 // how much closer their bag just got to checkout — not an internal
 // funnel breakdown of what happened to every item. That number leads;
 // everything else (the per-item tallies, the donut) is supporting detail
 // underneath it, not the headline.
-export default function SummaryScreen({ originalCount, bought, kept, removed }) {
+export default function SummaryScreen({ originalCount, bought, kept, removed, streak }) {
   const usefulnessPct = originalCount > 0 ? Math.round(((bought + kept) / originalCount) * 100) : 0;
 
   return (
@@ -69,6 +92,7 @@ export default function SummaryScreen({ originalCount, bought, kept, removed }) 
       <span className="mb-3 inline-block rounded-full bg-coral-50 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-coral-600">
         🎉 Reset complete
       </span>
+      <StreakBadge streak={streak} />
 
       {bought > 0 ? (
         <h1 className="text-3xl font-extrabold text-neutral-900 sm:text-4xl">

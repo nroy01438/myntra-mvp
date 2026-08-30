@@ -139,8 +139,27 @@ its reason is `null`, never guessed or backfilled later.
 - **Profile** (`components/ProfileTab.js`) — no login in this MVP, so the
   account section is static, but the stats card is real: it summarizes the
   lifetime `results` log (the same data `lib/analytics.js` logs per item)
-  — items processed, % of the time you agreed with the verdict, and the
-  bucket distribution by verdict.
+  — items processed, the bucket distribution by verdict, and a
+  **decisiveness tier** (`lib/gamification.js`) that reframes the verdict-
+  agreement percentage as a visible badge (🌱 New to Resets → 🙂 Casual
+  Sorter → ⚡ Decisive Shopper → 🏆 Wishlist Master) rather than a buried
+  number, plus the return **streak** described below.
+
+### Gamification: streaks, not discounts
+
+Completing a reset session extends a day-based streak — shown as a small
+badge on the summary screen ("🔥 3-day streak") and, more fully, on the
+Profile tab alongside the decisiveness tier. Deliberately no monetary tie-in
+(no "swipe 5 items, unlock 10% off"): the premise of Wishlist Reset is a
+genuine declutter tool, not a discount funnel, so the reward for returning
+stays identity/progress-based. Completing a second reset on the same
+calendar day doesn't extend the streak (that would make it trivial to farm
+in one sitting) — only an actual return visit, a full day apart, does.
+
+This streak is the **one exception** to the app's fully-stateless design: it
+persists to `localStorage` (`lib/gamification.js`), per-browser rather than
+per-account since there's no login. Everything else — wishlist membership,
+cart, session results — still resets on refresh, per the limitations below.
 
 ## Setup
 
@@ -225,9 +244,11 @@ into case-study metrics without changing the event shape:
 
 ## Known limitations (v1)
 
-- No database, no auth — fully stateless. Wishlist membership, cart
+- No database, no auth — mostly stateless. Wishlist membership, cart
   contents, and session results all live only in React context in the
-  browser tab and are lost on refresh.
+  browser tab and are lost on refresh. The one exception is the reset
+  streak, which persists to `localStorage` (see "Gamification" above) —
+  per-browser, not per-account, since there's still no login.
 - Product images (`components/ProductThumb.js`) are a category-tinted
   gradient block with a clothing-type emoji, sized modestly rather than
   filling the frame — not real product photography, per the IP boundary
