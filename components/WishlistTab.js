@@ -51,10 +51,11 @@ export default function WishlistTab({ onClose }) {
   } = useWishlist();
 
   // In a real deployment, a reset session would be triggered contextually
-  // (a sale starting on a saved item, an item going low-stock, the wishlist
-  // crossing a size threshold) rather than opened manually via a button —
-  // a known simplification for this MVP, where "Begin Reset" is the only
-  // entry point.
+  // from several signals — a sale starting on a saved item, an item going
+  // low-stock, the wishlist crossing a size threshold — rather than opened
+  // manually only. The size-threshold one is actually implemented (see
+  // ThresholdPromptModal / WISHLIST_RESET_PROMPT_THRESHOLD in
+  // WishlistContext.js); the others remain a known MVP simplification.
   function handleBeginReset() {
     setSessionQueue(wishlistItems);
     setSessionOriginal(wishlistItems.length);

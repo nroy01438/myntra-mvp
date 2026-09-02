@@ -4,6 +4,7 @@ import { useWishlist } from "@/lib/WishlistContext";
 import DisclaimerBadge from "@/components/DisclaimerBadge";
 import TopNav from "@/components/TopNav";
 import ReasonCaptureToast from "@/components/ReasonCaptureToast";
+import ThresholdPromptModal from "@/components/ThresholdPromptModal";
 
 /**
  * The persistent app shell: disclaimer banner and top nav never unmount or
@@ -44,6 +45,7 @@ export default function AppShell({
       />
       <div className="relative flex-1 overflow-y-auto">{children}</div>
       <ReasonCaptureToast />
+      <ThresholdPromptModal onReset={onQuickReset} />
     </div>
   );
 }
