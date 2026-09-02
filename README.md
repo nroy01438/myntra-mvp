@@ -122,10 +122,18 @@ its reason is `null`, never guessed or backfilled later.
      optional, never required to act. **↩ Undo last** is always available
      (session and summary alike), and the session calls out momentum at the
      halfway point and on the last item. In a real deployment a reset
-     session would be triggered contextually (a sale starting, an item
-     going low-stock, the wishlist crossing a size threshold) rather than
-     opened manually — a known simplification for this MVP, noted in
-     `components/WishlistTab.js`.
+     session would be triggered contextually from several signals — a sale
+     starting on a saved item, an item going low-stock, the wishlist
+     crossing a size threshold — rather than opened manually only. The
+     size-threshold one is actually implemented
+     (`components/ThresholdPromptModal.js`): crossing 10 saved items
+     surfaces a one-time "reset now?" prompt (mounted globally in
+     `AppShell.js`, so it can appear over any screen), reusing the same
+     auto-start-reset action as the nav's "Reset Now" pill. Dismissing it
+     ("Maybe later") re-arms itself the next time the wishlist drops below
+     the threshold and climbs back up — it isn't silenced forever. The
+     other two signals (sale, low-stock) remain a known MVP simplification,
+     noted in `components/WishlistTab.js`.
   3. **Summary** — once the session's queue is empty, the same screen
      morphs again into the summary: tallies bought/kept/removed from *that*
      session and a genuine "your wishlist just got X% more useful" stat
