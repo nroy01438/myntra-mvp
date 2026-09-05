@@ -43,9 +43,12 @@ screen.
 **Shared state** (`lib/WishlistContext.js`) is a single client-side model:
 a static `catalog` (all 18 products, each with real LLM-derived
 `crowdStats`), a toggleable `wishlistIds` set (which catalog items are
-currently saved — seeded with 5 (`DEFAULT_WISHLIST_IDS`, deliberately
-picked so all four verdict types are reachable depending on the reason you
-pick), not the full catalog, but a normal add/remove set from then on),
+currently saved — seeded with 10 (`DEFAULT_WISHLIST_IDS`, two from each of
+the 5 catalog categories, deliberately picked so all four verdict types are
+reachable depending on the reason you pick — and seeded at exactly the
+reset-prompt threshold so the contextual trigger, see below, demoes
+immediately on first load), not the full catalog, but a normal add/remove
+set from then on),
 a `savedReasons` map (productId → reason, captured at save time — see
 below), and a `cart`. Because every catalog product already carries real
 crowdStats, anything added to the wishlist from Home runs through the
